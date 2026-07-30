@@ -1,0 +1,17 @@
+﻿{
+  "folders": [
+    {
+      "name": "RSFA Technical Knowledge",
+      "path": "rsfa-technical-knowledge"
+    },
+    {
+      "name": "RSFA Automation Development",
+      "path": "rsfa-automation-development"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true
+    }
+  }
+}
