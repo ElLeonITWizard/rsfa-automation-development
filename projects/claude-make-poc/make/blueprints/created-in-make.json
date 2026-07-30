@@ -1,0 +1,62 @@
+{
+  "name": "M.com: Claude Scenario Creation POC (Jul 2026)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "util:BasicTrigger",
+      "version": 1,
+      "parameters": {
+        "values": [
+          {
+            "spec": [
+              { "name": "message", "value": "Claude Code MCP proof of concept" }
+            ]
+          }
+        ]
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": { "x": 0, "y": 0 }
+      }
+    },
+    {
+      "id": 2,
+      "module": "util:SetVariables",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "scope": "roundtrip",
+        "variables": [
+          { "name": "confirmationMessage", "value": "{{1.message}}" }
+        ]
+      },
+      "metadata": {
+        "designer": { "x": 300, "y": 0 }
+      }
+    }
+  ],
+  "metadata": {
+    "instant": false,
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    },
+    "designer": { "orphans": [] },
+    "zone": "eu2.make.com"
+  },
+  "scheduling": {
+    "type": "on-demand"
+  },
+  "interface": {
+    "input": [],
+    "output": []
+  }
+}
