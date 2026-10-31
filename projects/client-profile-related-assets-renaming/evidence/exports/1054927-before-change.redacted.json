@@ -1,0 +1,683 @@
+{
+  "name": "M.com: CP and Deals Renaming after Contact Renaming",
+  "flow": [
+    {
+      "id": 70,
+      "module": "monday:watchItemNameV2",
+      "version": 2,
+      "parameters": {
+        "__IMTHOOK__": 3906052
+      },
+      "mapper": {}
+    },
+    {
+      "id": 27,
+      "module": "monday:GetItemV2",
+      "version": 2,
+      "parameters": {
+        "__IMTCONN__": 240128
+      },
+      "mapper": {
+        "id": "{{70.pulseId}}",
+        "boardId": "2074688484",
+        "showSubitems": true,
+        "showParentItem": true,
+        "disableOutputInterfaceCaching": false
+      }
+    },
+    {
+      "id": 101,
+      "module": "monday:ChangeMultipleColumnValuesV2",
+      "version": 2,
+      "parameters": {
+        "__IMTCONN__": 240128
+      },
+      "mapper": {
+        "itemId": "{{27.id}}",
+        "boardId": "2074688484",
+        "columnValuesToChange": [
+          {
+            "columnId": "text_mkxdmy0m",
+            "columnValue": "{{first(ifempty(split(27.name; space); \"-\"))}}"
+          },
+          {
+            "columnId": "text_mkxdw5rs",
+            "columnValue": "{{last(ifempty(split(27.name; space); \"-\"))}}"
+          }
+        ],
+        "create_labels_if_missing": false
+      },
+      "onerror": [
+        {
+          "id": 103,
+          "module": "builtin:Resume",
+          "version": 1,
+          "parameters": {},
+          "mapper": {
+            "id": "{{27.id}}"
+          }
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "mapper": null,
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 32,
+              "module": "monday:GetItemV2",
+              "version": 2,
+              "parameters": {
+                "__IMTCONN__": 240128
+              },
+              "mapper": {
+                "id": "{{27.mappable_column_values.board_relation_mkxpzyfq.linkedPulseIds[].linkedPulseId}}",
+                "boardId": "5024661649",
+                "showSubitems": true,
+                "showParentItem": true,
+                "disableOutputInterfaceCaching": false
+              },
+              "filter": {
+                "name": "Contact has got Client Profile",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{27.mappable_column_values.board_relation_mkxpzyfq.linkedPulseIds[].linkedPulseId}}",
+                      "o": "exist"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "id": 30,
+              "module": "monday:ChangeMultipleColumnValuesV2",
+              "version": 2,
+              "parameters": {
+                "__IMTCONN__": 240128
+              },
+              "mapper": {
+                "itemId": "{{27.mappable_column_values.board_relation_mkxpzyfq.linkedPulseIds[].linkedPulseId}}",
+                "boardId": "5024661649",
+                "columnValuesToChange": [
+                  {
+                    "columnId": "name",
+                    "columnValue": "{{replace(32.mappable_column_values.board_relation38.text; \",\"; space + \"&\")}}"
+                  }
+                ],
+                "create_labels_if_missing": false
+              },
+              "onerror": [
+                {
+                  "id": 91,
+                  "module": "scenario-service:CallSubscenario",
+                  "version": 2,
+                  "parameters": {
+                    "scenario": "SCN_8732008",
+                    "shouldWaitForExecutionEnd": true
+                  },
+                  "mapper": {
+                    "data": {
+                      "ScenarioURL": "{{var.scenario.url}}",
+                      "ErrorMessage": "Issue while updating Client Profile Name. Client Profile ID: <b> {{27.mappable_column_values.board_relation_mkxpzyfq.linkedPulseIds[].linkedPulseId}}</b>. New name: <b> {{replace(32.mappable_column_values.board_relation38.text; \",\"; space + \"&\")}}</b>. Please review the flow.",
+                      "ScenarioName": "{{var.scenario.name}}",
+                      "ToRecipients": "tech@rsfa.co.nz"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": 34,
+              "module": "builtin:BasicRouter",
+              "version": 1,
+              "mapper": null,
+              "routes": [
+                {
+                  "flow": [
+                    {
+                      "id": 42,
+                      "module": "builtin:BasicFeeder",
+                      "version": 1,
+                      "parameters": {},
+                      "mapper": {
+                        "array": "{{32.mappable_column_values.board_relation_mkyebcmw.linkedPulseIds}}"
+                      },
+                      "filter": {
+                        "name": "Mortgage Pipeline Exists",
+                        "conditions": [
+                          [
+                            {
+                              "a": "{{32.mappable_column_values.board_relation_mkyebcmw.linkedPulseIds[].linkedPulseId}}",
+                              "o": "exist"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    {
+                      "id": 44,
+                      "module": "monday:GetItemV2",
+                      "version": 2,
+                      "parameters": {
+                        "__IMTCONN__": 240128
+                      },
+                      "mapper": {
+                        "id": "{{42.linkedPulseId}}",
+                        "boardId": "5025201889",
+                        "showSubitems": true,
+                        "showParentItem": true,
+                        "disableOutputInterfaceCaching": false
+                      }
+                    },
+                    {
+                      "id": 46,
+                      "module": "monday:ChangeMultipleColumnValuesV2",
+                      "version": 2,
+                      "parameters": {
+                        "__IMTCONN__": 240128
+                      },
+                      "mapper": {
+                        "itemId": "{{44.id}}",
+                        "boardId": "5025201889",
+                        "columnValuesToChange": [
+                          {
+                            "columnId": "name",
+                            "columnValue": "{{replace(32.mappable_column_values.board_relation38.text; \",\"; space + \"&\")}}"
+                          }
+                        ],
+                        "create_labels_if_missing": false
+                      },
+                      "onerror": [
+                        {
+                          "id": 93,
+                          "module": "scenario-service:CallSubscenario",
+                          "version": 2,
+                          "parameters": {
+                            "scenario": "SCN_8732008",
+                            "shouldWaitForExecutionEnd": true
+                          },
+                          "mapper": {
+                            "data": {
+                              "ScenarioURL": "{{var.scenario.url}}",
+                              "ErrorMessage": "Issue while updating Mortgage Pipeline Deal Name. Deal ID: <b> {{44.id}}</b>. New name: <b> {{replace(32.mappable_column_values.board_relation38.text; \",\"; space + \"&\")}}</b>. Please review the flow.",
+                              "ScenarioName": "{{var.scenario.name}}",
+                              "ToRecipients": "tech@rsfa.co.nz"
+                            }
+                          }
+                        },
+                        {
+                          "id": 92,
+                          "module": "builtin:Ignore",
+                          "version": 1
+                        }
+                      ]
+                    },
+                    {
+                      "id": 47,
+                      "module": "util:TextAggregator",
+                      "version": 1,
+                      "parameters": {
+                        "feeder": 42,
+                        "rowSeparator": "other",
+                        "otherRowSeparator": ", "
+                      },
+                      "mapper": {
+                        "value": "{{44.id}}"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "flow": [
+                    {
+                      "id": 48,
+                      "module": "builtin:BasicFeeder",
+                      "version": 1,
+                      "parameters": {},
+                      "mapper": {
+                        "array": "{{32.mappable_column_values.board_relation_mkycc37a.linkedPulseIds}}"
+                      },
+                      "filter": {
+                        "name": "Existing Mortgage Exists",
+                        "conditions": [
+                          [
+                            {
+                              "a": "{{32.mappable_column_values.board_relation_mkycc37a.linkedPulseIds[].linkedPulseId}}",
+                              "o": "exist"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    {
+                      "id": 49,
+                      "module": "monday:GetItemV2",
+                      "version": 2,
+                      "parameters": {
+                        "__IMTCONN__": 240128
+                      },
+                      "mapper": {
+                        "id": "{{48.linkedPulseId}}",
+                        "boardId": "5024672364",
+                        "showSubitems": true,
+                        "showParentItem": true,
+                        "disableOutputInterfaceCaching": false
+                      }
+                    },
+                    {
+                      "id": 50,
+                      "module": "monday:ChangeMultipleColumnValuesV2",
+                      "version": 2,
+                      "parameters": {
+                        "__IMTCONN__": 240128
+                      },
+                      "mapper": {
+                        "itemId": "{{49.id}}",
+                        "boardId": "5024672364",
+                        "columnValuesToChange": [
+                          {
+                            "columnId": "name",
+                            "columnValue": "{{replace(32.mappable_column_values.board_relation38.text; \",\"; space + \"&\")}}"
+                          }
+                        ],
+                        "create_labels_if_missing": false
+                      },
+                      "onerror": [
+                        {
+                          "id": 95,
+                          "module": "scenario-service:CallSubscenario",
+                          "version": 2,
+                          "parameters": {
+                            "scenario": "SCN_8732008",
+                            "shouldWaitForExecutionEnd": true
+                          },
+                          "mapper": {
+                            "data": {
+                              "ScenarioURL": "{{var.scenario.url}}",
+                              "ErrorMessage": "Issue while updating Existing Mortgage Deal Name. Deal ID: <b> {{49.id}}</b>. New name: <b> {{replace(32.mappable_column_values.board_relation38.text; \",\"; space + \"&\")}}</b>. Please review the flow.",
+                              "ScenarioName": "{{var.scenario.name}}",
+                              "ToRecipients": "tech@rsfa.co.nz"
+                            }
+                          }
+                        },
+                        {
+                          "id": 94,
+                          "module": "builtin:Ignore",
+                          "version": 1
+                        }
+                      ]
+                    },
+                    {
+                      "id": 51,
+                      "module": "util:TextAggregator",
+                      "version": 1,
+                      "parameters": {
+                        "feeder": 48,
+                        "rowSeparator": "other",
+                        "otherRowSeparator": ", "
+                      },
+                      "mapper": {
+                        "value": "{{49.id}}"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "flow": [
+                    {
+                      "id": 52,
+                      "module": "builtin:BasicFeeder",
+                      "version": 1,
+                      "parameters": {},
+                      "mapper": {
+                        "array": "{{32.mappable_column_values.board_relation_mkye5k1h.linkedPulseIds}}"
+                      },
+                      "filter": {
+                        "name": "KiwiSaver Pipeline Exists",
+                        "conditions": [
+                          [
+                            {
+                              "a": "{{32.mappable_column_values.board_relation_mkye5k1h.linkedPulseIds[].linkedPulseId}}",
+                              "o": "exist"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    {
+                      "id": 53,
+                      "module": "monday:GetItemV2",
+                      "version": 2,
+                      "parameters": {
+                        "__IMTCONN__": 240128
+                      },
+                      "mapper": {
+                        "id": "{{52.linkedPulseId}}",
+                        "boardId": "5025201954",
+                        "showSubitems": true,
+                        "showParentItem": true,
+                        "disableOutputInterfaceCaching": false
+                      }
+                    },
+                    {
+                      "id": 54,
+                      "module": "monday:ChangeMultipleColumnValuesV2",
+                      "version": 2,
+                      "parameters": {
+                        "__IMTCONN__": 240128
+                      },
+                      "mapper": {
+                        "itemId": "{{53.id}}",
+                        "boardId": "5025201954",
+                        "columnValuesToChange": [
+                          {
+                            "columnId": "name",
+                            "columnValue": "{{replace(32.mappable_column_values.board_relation38.text; \",\"; space + \"&\")}}"
+                          }
+                        ],
+                        "create_labels_if_missing": false
+                      },
+                      "onerror": [
+                        {
+                          "id": 97,
+                          "module": "scenario-service:CallSubscenario",
+                          "version": 2,
+                          "parameters": {
+                            "scenario": "SCN_8732008",
+                            "shouldWaitForExecutionEnd": true
+                          },
+                          "mapper": {
+                            "data": {
+                              "ScenarioURL": "{{var.scenario.url}}",
+                              "ErrorMessage": "Issue while updating KiwiSaver Pipeline Deal Name. Deal ID: <b> {{53.id}}</b>. New name: <b> {{replace(32.mappable_column_values.board_relation38.text; \",\"; space + \"&\")}}</b>. Please review the flow.",
+                              "ScenarioName": "{{var.scenario.name}}",
+                              "ToRecipients": "tech@rsfa.co.nz"
+                            }
+                          }
+                        },
+                        {
+                          "id": 96,
+                          "module": "builtin:Ignore",
+                          "version": 1
+                        }
+                      ]
+                    },
+                    {
+                      "id": 55,
+                      "module": "util:TextAggregator",
+                      "version": 1,
+                      "parameters": {
+                        "feeder": 52,
+                        "rowSeparator": "other",
+                        "otherRowSeparator": ", "
+                      },
+                      "mapper": {
+                        "value": "{{53.id}}"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "flow": [
+                    {
+                      "id": 65,
+                      "module": "builtin:BasicFeeder",
+                      "version": 1,
+                      "parameters": {},
+                      "mapper": {
+                        "array": "{{32.mappable_column_values.board_relation_mkyeyfwe.linkedPulseIds}}"
+                      },
+                      "filter": {
+                        "name": "Existing KiwiSaver Exists",
+                        "conditions": [
+                          [
+                            {
+                              "a": "{{32.mappable_column_values.board_relation_mkyeyfwe.linkedPulseIds[].linkedPulseId}}",
+                              "o": "exist"
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    {
+                      "id": 66,
+                      "module": "monday:GetItemV2",
+                      "version": 2,
+                      "parameters": {
+                        "__IMTCONN__": 240128
+                      },
+                      "mapper": {
+                        "id": "{{65.linkedPulseId}}",
+                        "boardId": "5024672484",
+                        "showSubitems": true,
+                        "showParentItem": true,
+                        "disableOutputInterfaceCaching": false
+                      }
+                    },
+                    {
+                      "id": 67,
+                      "module": "monday:ChangeMultipleColumnValuesV2",
+                      "version": 2,
+                      "parameters": {
+                        "__IMTCONN__": 240128
+                      },
+                      "mapper": {
+                        "itemId": "{{66.id}}",
+                        "boardId": "5024672484",
+                        "columnValuesToChange": [
+                          {
+                            "columnId": "name",
+                            "columnValue": "{{replace(32.mappable_column_values.board_relation38.text; \",\"; space + \"&\")}}"
+                          }
+                        ],
+                        "create_labels_if_missing": false
+                      },
+                      "onerror": [
+                        {
+                          "id": 99,
+                          "module": "scenario-service:CallSubscenario",
+                          "version": 2,
+                          "parameters": {
+                            "scenario": "SCN_8732008",
+                            "shouldWaitForExecutionEnd": true
+                          },
+                          "mapper": {
+                            "data": {
+                              "ScenarioURL": "{{var.scenario.url}}",
+                              "ErrorMessage": "Issue while updating Existing KiwiSaver Deal Name. Deal ID: <b> {{66.id}}</b>. New name: <b> {{replace(32.mappable_column_values.board_relation38.text; \",\"; space + \"&\")}}</b>. Please review the flow.",
+                              "ScenarioName": "{{var.scenario.name}}",
+                              "ToRecipients": "tech@rsfa.co.nz"
+                            }
+                          }
+                        },
+                        {
+                          "id": 98,
+                          "module": "builtin:Ignore",
+                          "version": 1
+                        }
+                      ]
+                    },
+                    {
+                      "id": 68,
+                      "module": "util:TextAggregator",
+                      "version": 1,
+                      "parameters": {
+                        "feeder": 65,
+                        "rowSeparator": "other",
+                        "otherRowSeparator": ", "
+                      },
+                      "mapper": {
+                        "value": "{{66.id}}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 83,
+              "module": "builtin:BasicFeeder",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "array": "{{27.mappable_column_values.board_relation_mm0v33yp.linkedPulseIds}}"
+              },
+              "filter": {
+                "name": "Contact has Insurance Pipeline Policies Associated",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{27.mappable_column_values.board_relation_mm0v33yp.linkedPulseIds[].linkedPulseId}}",
+                      "o": "exist"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "id": 88,
+              "module": "util:SetVariable2",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "name": "insurancePipelineBoardId",
+                "scope": "roundtrip",
+                "value": "5025201920"
+              }
+            },
+            {
+              "id": 73,
+              "module": "http:MakeRequest",
+              "version": 4,
+              "parameters": {
+                "tlsType": "",
+                "proxyKeychain": "",
+                "authenticationType": "noAuth"
+              },
+              "mapper": {
+                "url": "<REDACTED_MAKE_WEBHOOK_URL>",
+                "method": "post",
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "shareCookies": false,
+                "parseResponse": true,
+                "allowRedirects": true,
+                "stopOnHttpError": true,
+                "jsonStringBodyContent": "{\"event\":{\"pulseId\":{{83.linkedPulseId}}, \"boardId\":{{88.insurancePipelineBoardId}}}}",
+                "requestCompressedContent": true
+              }
+            },
+            {
+              "id": 85,
+              "module": "util:TextAggregator",
+              "version": 1,
+              "parameters": {
+                "feeder": 83,
+                "rowSeparator": "other",
+                "otherRowSeparator": ", "
+              },
+              "mapper": {
+                "value": "{{83.linkedPulseId}}"
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 84,
+              "module": "builtin:BasicFeeder",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "array": "{{27.mappable_column_values.board_relation_mm0vv3md.linkedPulseIds}}"
+              },
+              "filter": {
+                "name": "Contact has Existing Insurance Policies Associated",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{27.mappable_column_values.board_relation_mm0vv3md.linkedPulseIds[].linkedPulseId}}",
+                      "o": "exist"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "id": 87,
+              "module": "util:SetVariable2",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "name": "existingInsuranceBoardId",
+                "scope": "roundtrip",
+                "value": "5024672437"
+              }
+            },
+            {
+              "id": 80,
+              "module": "http:MakeRequest",
+              "version": 4,
+              "parameters": {
+                "tlsType": "",
+                "proxyKeychain": "",
+                "authenticationType": "noAuth"
+              },
+              "mapper": {
+                "url": "<REDACTED_MAKE_WEBHOOK_URL>",
+                "method": "post",
+                "contentType": "json",
+                "inputMethod": "jsonString",
+                "shareCookies": false,
+                "parseResponse": true,
+                "allowRedirects": true,
+                "stopOnHttpError": true,
+                "jsonStringBodyContent": "{\"event\":{\"pulseId\":{{84.linkedPulseId}}, \"boardId\":{{87.existingInsuranceBoardId}}}}",
+                "requestCompressedContent": true
+              }
+            },
+            {
+              "id": 86,
+              "module": "util:TextAggregator",
+              "version": 1,
+              "parameters": {
+                "feeder": 84,
+                "rowSeparator": "other",
+                "otherRowSeparator": ", "
+              },
+              "mapper": {
+                "value": "{{84.linkedPulseId}}"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "scenario": {
+      "dlq": false,
+      "slots": null,
+      "dataloss": false,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "roundtrips": 1,
+      "sequential": false,
+      "confidential": false,
+      "freshVariables": false,
+      "autoCommitTriggerLast": true
+    },
+    "instant": true
+  },
+  "_note": "Structural extract of the live blueprint read via the Make API on 2026-10-31 (read-only). Designer metadata, restore data and sample payloads removed; Make webhook URLs redacted. Point-in-time evidence, not a deployable backup: before any change export the full blueprint again (DEPLOYMENT_PLAN.md step 0)."
+}

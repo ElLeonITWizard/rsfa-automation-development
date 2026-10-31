@@ -1,0 +1,1 @@
+query ($ids: [ID!]) { items(ids: $ids) { id name state board { id } contacts: column_values(ids: ["board_relation38"]) { ... on BoardRelationValue { linked_item_ids } } } }

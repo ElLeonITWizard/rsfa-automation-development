@@ -1,0 +1,335 @@
+{
+  "name": "M.com: Lead Rename by ClientProfile (Mar 2026)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": 4335040,
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "restore": {
+          "parameters": {
+            "hook": {
+              "data": {
+                "editable": "true"
+              },
+              "label": "New Lead webhook"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "mapper": null,
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        }
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 9,
+              "module": "gateway:WebhookRespond",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "status": 200,
+                "body": "{\"challenge\":\"{{1.challenge}}\"}",
+                "headers": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              },
+              "filter": {
+                "name": "monday.com verification challenge",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{ifempty(1.challenge; \"\")}}",
+                      "b": "",
+                      "o": "text:notequal"
+                    }
+                  ]
+                ]
+              },
+              "metadata": {
+                "designer": {
+                  "x": 600,
+                  "y": -300
+                }
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 3,
+              "module": "monday:ExecuteGraphQLQueryV2",
+              "version": 2,
+              "parameters": {
+                "__IMTCONN__": 240128
+              },
+              "mapper": {
+                "method": "POST",
+                "queryBody": "query { items(ids: [{{1.event.pulseId}}]) { id name state board { id } cp: column_values(ids: [\"board_relation_mm7c1wcw\"]) { ... on BoardRelationValue { linked_item_ids linked_items { id name state } } } } }",
+                "variablesDataSource": "array",
+                "variables": []
+              },
+              "metadata": {
+                "designer": {
+                  "x": 600,
+                  "y": 0,
+                  "name": "Read Lead and its Client Profile"
+                },
+                "restore": {
+                  "parameters": {
+                    "__IMTCONN__": {
+                      "label": "My Monday v2 connection - 1",
+                      "data": {
+                        "scoped": "true",
+                        "connection": "monday"
+                      }
+                    }
+                  }
+                }
+              },
+              "filter": {
+                "name": "Lead Client Profiles column changed",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{ifempty(1.challenge; \"\")}}",
+                      "b": "",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.event.boardId}}",
+                      "b": "2074688480",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.event.columnId}}",
+                      "b": "board_relation_mm7c1wcw",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.event.pulseId}}",
+                      "b": "^[0-9]{1,20}$",
+                      "o": "text:pattern"
+                    }
+                  ]
+                ]
+              },
+              "onerror": [
+                {
+                  "id": 5,
+                  "module": "scenario-service:CallSubscenario",
+                  "version": 2,
+                  "parameters": {
+                    "scenario": "SCN_8732008",
+                    "shouldWaitForExecutionEnd": true
+                  },
+                  "mapper": {
+                    "data": {
+                      "ScenarioURL": "{{var.scenario.url}}",
+                      "ScenarioName": "{{var.scenario.name}}",
+                      "ToRecipients": "tech@rsfa.co.nz",
+                      "ErrorMessage": "Lead rename by Client Profile: reading Lead <b>{{1.event.pulseId}}</b> failed. {{3.error.message}}."
+                    }
+                  },
+                  "metadata": {
+                    "designer": {
+                      "x": 600,
+                      "y": 300,
+                      "name": "Error Notification Email"
+                    },
+                    "restore": {
+                      "parameters": {
+                        "scenario": {
+                          "label": "Outlook: Email Notification after Failed Scenario"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 6,
+                  "module": "builtin:Ignore",
+                  "version": 1,
+                  "metadata": {
+                    "designer": {
+                      "x": 900,
+                      "y": 300
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": 4,
+              "module": "monday:ExecuteGraphQLQueryV2",
+              "version": 2,
+              "parameters": {
+                "__IMTCONN__": 240128
+              },
+              "mapper": {
+                "method": "POST",
+                "queryBody": "mutation ($i: ID!, $v: String!) { change_simple_column_value(board_id: 2074688480, item_id: $i, column_id: \"name\", value: $v) { id } }",
+                "variablesDataSource": "array",
+                "variables": [
+                  {
+                    "key": "i",
+                    "value": "{{3.body.data.items[1].id}}"
+                  },
+                  {
+                    "key": "v",
+                    "value": "{{trim(3.body.data.items[1].cp[1].linked_items[1].name)}}"
+                  }
+                ]
+              },
+              "metadata": {
+                "designer": {
+                  "x": 900,
+                  "y": 0,
+                  "name": "Rename Lead to its Client Profile"
+                },
+                "restore": {
+                  "parameters": {
+                    "__IMTCONN__": {
+                      "label": "My Monday v2 connection - 1",
+                      "data": {
+                        "scoped": "true",
+                        "connection": "monday"
+                      }
+                    }
+                  }
+                }
+              },
+              "filter": {
+                "name": "Exactly one active Client Profile, name differs",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{3.body.data.items[1].board.id}}",
+                      "b": "2074688480",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{3.body.data.items[1].state}}",
+                      "b": "active",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{length(3.body.data.items[1].cp[1].linked_item_ids)}}",
+                      "b": "1",
+                      "o": "number:equal"
+                    },
+                    {
+                      "a": "{{3.body.data.items[1].cp[1].linked_items[1].state}}",
+                      "b": "active",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{trim(3.body.data.items[1].cp[1].linked_items[1].name)}}",
+                      "b": "",
+                      "o": "text:notequal"
+                    },
+                    {
+                      "a": "{{length(trim(3.body.data.items[1].cp[1].linked_items[1].name))}}",
+                      "b": "255",
+                      "o": "number:lessorequal"
+                    },
+                    {
+                      "a": "{{trim(3.body.data.items[1].cp[1].linked_items[1].name)}}",
+                      "b": "{{3.body.data.items[1].name}}",
+                      "o": "text:notequal"
+                    }
+                  ]
+                ]
+              },
+              "onerror": [
+                {
+                  "id": 7,
+                  "module": "scenario-service:CallSubscenario",
+                  "version": 2,
+                  "parameters": {
+                    "scenario": "SCN_8732008",
+                    "shouldWaitForExecutionEnd": true
+                  },
+                  "mapper": {
+                    "data": {
+                      "ScenarioURL": "{{var.scenario.url}}",
+                      "ScenarioName": "{{var.scenario.name}}",
+                      "ToRecipients": "tech@rsfa.co.nz",
+                      "ErrorMessage": "Lead rename by Client Profile: renaming Lead <b>{{1.event.pulseId}}</b> failed. {{4.error.message}}."
+                    }
+                  },
+                  "metadata": {
+                    "designer": {
+                      "x": 900,
+                      "y": 300,
+                      "name": "Error Notification Email"
+                    },
+                    "restore": {
+                      "parameters": {
+                        "scenario": {
+                          "label": "Outlook: Email Notification after Failed Scenario"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 8,
+                  "module": "builtin:Ignore",
+                  "version": 1,
+                  "metadata": {
+                    "designer": {
+                      "x": 1200,
+                      "y": 300
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "designer": {
+      "orphans": []
+    },
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": true,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    }
+  }
+}

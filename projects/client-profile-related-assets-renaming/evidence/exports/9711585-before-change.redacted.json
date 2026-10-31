@@ -1,0 +1,31 @@
+{
+  "name": "M.com: Lead Rename by ClientProfile (Mar 2026)",
+  "flow": [
+    {
+      "id": 2,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": 4335040,
+        "maxResults": 1
+      },
+      "mapper": {}
+    }
+  ],
+  "metadata": {
+    "scenario": {
+      "dlq": false,
+      "slots": null,
+      "dataloss": false,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "roundtrips": 1,
+      "sequential": false,
+      "confidential": false,
+      "freshVariables": false,
+      "autoCommitTriggerLast": true
+    },
+    "instant": true
+  },
+  "_note": "Structural extract of the live blueprint read via the Make API on 2026-10-31 (read-only). Designer metadata, restore data and sample payloads removed; Make webhook URLs redacted. Point-in-time evidence, not a deployable backup: before any change export the full blueprint again (DEPLOYMENT_PLAN.md step 0)."
+}

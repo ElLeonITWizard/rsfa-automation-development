@@ -1,0 +1,24 @@
+# node tests/rename-planner.test.js — 2026-10-31T15:23Z — node v22.23.4
+PASS cp rule: Lead, Mortgage App, SOP Masterboard, KiwiSaver boards take the profile name
+PASS cp rule: item linked to several profiles is skipped, not renamed
+PASS KiwiSaver Pipeline found through both link columns is planned once
+PASS borrowers rule matches 1228763/1232945: "A, B" -> "A & B"
+PASS borrowers rule does NOT use the profile name (Borrowers differ from profile)
+PASS borrowers empty -> skipped (never blank a name)
+PASS owners rule matches 1215342: owners in link order joined " & " + " | provider"
+PASS owners rule: same policy found by profile and by owner is planned once
+PASS contact rule: IQ, KQ and Aircall take the single linked contact name
+PASS contact rule: contact outside the profile or several contacts -> skipped
+PASS idempotent: second run over an already-renamed state plans nothing
+PASS whitespace is normalised; names with quotes/ampersands pass through unchanged
+PASS guards: missing/archived/foreign/empty profile aborts with no renames
+PASS a missing alias in the response aborts (query/spec drift)
+PASS safety cap: more renames than maxRenames aborts with nothing applied
+PASS truncated pages are reported (cursor not null)
+PASS inputs may arrive as JSON text (Make Transform-to-JSON) or as objects
+PASS too-long target is skipped (Monday 255-char name limit)
+PASS query aliases and planner SPECS stay in sync
+PASS Make-style execution: file body run as a function of `input` (no `module`) returns the plan
+PASS blueprint embeds exactly the tested planner and the generated query
+
+21/21 passed
