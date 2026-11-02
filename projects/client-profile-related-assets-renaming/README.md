@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Project slug | `client-profile-related-assets-renaming` |
-| Project status | Deployed - Pending Validation — `1054927` changed, `10083674` (cascade) and `9711585` (Lead) **active** since 2026-11-02; Monday webhooks and tests pending |
+| Project status | Deployed - Pending Validation — `1054927` changed; `10083674` (cascade, webhook `41427237`) and `9711585` (Lead, webhook `41427223`) **active** since 2026-11-02; live tests passed on the test CP; pending: first real Lead link (T-13) |
 | Requester | RSFA technical consultant, from conversations with Rod Schubert |
 | Technical owner | tech@rsfa.co.nz |
 | Date opened | 2026-10-31 |

@@ -19,7 +19,7 @@ Cascade Client Profile renames to related items on 10 Monday boards (Mortgage Pi
 
 ## Current status
 
-`Deployed - Pending Validation` — `1054927` changed; `10083674` and `9711585` active with their Monday webhooks (`41427237`, `41427223`) since 2026-11-02; tests T-02…T-17 pending.
+`Deployed - Pending Validation` — `1054927` changed; `10083674` and `9711585` active with their Monday webhooks (`41427237`, `41427223`) since 2026-11-02; live tests passed on the test CP (TEST_PLAN); pending: T-13 on the first real Lead link.
 
 ## Change log
 
