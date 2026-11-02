@@ -32,12 +32,11 @@ function run(assets, prof = profile(), more = {}) {
 const tests = [];
 const test = (name, fn) => tests.push([name, fn]);
 
-test('cp rule: Lead, Mortgage App, SOP Masterboard, KiwiSaver boards take the profile name', () => {
+test('cp rule: Lead, Mortgage App, SOP Masterboard, Existing KiwiSaver take the profile name', () => {
   const a = emptyAssets();
   a.leads = page([{ id: '1', name: 'Jane Example', state: 'active', link: rel([CP]) }]);
   a.mortgageApp = page([{ id: '2', name: 'Old Name', state: 'active', link: rel([CP]) }]);
   a.sopMasterboard = page([{ id: '3', name: 'Old Name', state: 'active', link: rel([CP]) }]);
-  a.kiwisaverPipeline = page([{ id: '4', name: 'Old Name', state: 'active', link: rel([CP]) }]);
   a.existingKiwisaver = page([{ id: '5', name: 'Old Name', state: 'active', link: rel([CP]) }]);
   const r = run(a);
   assert.strictEqual(r.ok, true);
@@ -45,7 +44,6 @@ test('cp rule: Lead, Mortgage App, SOP Masterboard, KiwiSaver boards take the pr
     ['2074688480', '1', 'Jane Example & Sam Sample'],
     ['5025483251', '2', 'Jane Example & Sam Sample'],
     ['5026186805', '3', 'Jane Example & Sam Sample'],
-    ['5025201954', '4', 'Jane Example & Sam Sample'],
     ['5024672484', '5', 'Jane Example & Sam Sample'],
   ]);
 });
@@ -58,17 +56,17 @@ test('cp rule: item linked to several profiles is skipped, not renamed', () => {
   assert.deepStrictEqual(r.skipped, [{ boardId: '2074688480', itemId: '1', reason: 'LINKED_TO_OTHER_OR_MULTIPLE_PROFILES' }]);
 });
 
-test('KiwiSaver Pipeline found through both link columns is planned once', () => {
-  const a = emptyAssets();
-  a.kiwisaverPipeline = page([{ id: '4', name: 'Old', state: 'active', link: rel([CP]) }]);
-  a.kiwisaverPipelineLegacy = page([{ id: '4', name: 'Old', state: 'active', link: rel([CP]) }]);
-  assert.strictEqual(run(a).renames.length, 1);
+test('in-progress pipelines (Mortgage Pipeline, KiwiSaver Pipeline) are not in scope', () => {
+  const boards = Object.values(SPECS).map((v) => v.boardId);
+  assert.ok(!boards.includes('5025201889') && !boards.includes('5025201954'));
 });
 
-test('borrowers rule matches 1228763/1232945: "A, B" -> "A & B"', () => {
+test('borrowers rule matches 1228763: "A, B" -> "A & B"', () => {
   const a = emptyAssets();
-  a.mortgagePipeline = page([{ id: '10', name: 'Jane Example', state: 'active', people: [{ linked_item_ids: [JANE, SAM], display_value: 'Jane Example, Sam Sample' }] }]);
-  a.existingMortgages = page([{ id: '11', name: 'Jane Example & Sam Sample', state: 'active', people: [{ linked_item_ids: [JANE, SAM], display_value: 'Jane Example, Sam Sample' }] }]);
+  a.existingMortgages = page([
+    { id: '10', name: 'Jane Example', state: 'active', people: [{ linked_item_ids: [JANE, SAM], display_value: 'Jane Example, Sam Sample' }] },
+    { id: '11', name: 'Jane Example & Sam Sample', state: 'active', people: [{ linked_item_ids: [JANE, SAM], display_value: 'Jane Example, Sam Sample' }] },
+  ]);
   const r = run(a);
   assert.deepStrictEqual(r.renames.map((x) => [x.itemId, x.newName]), [['10', 'Jane Example & Sam Sample']]);
   assert.strictEqual(r.unchanged, 1);

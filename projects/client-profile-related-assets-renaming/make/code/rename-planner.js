@@ -25,14 +25,12 @@ const MAX_NAME_LENGTH = 255; // Monday item-name limit
 //             board-relation `text` field is null in the API, display_value keeps the link order)
 //   owners    item name = Policy Owner names joined " & " (+ " | " + provider when set)  (same as 1215342)
 //   contact   item name = the single linked Contact's name  (same as 9447215 / Aircall scenarios)
+// 💲Mortgage Pipeline (5025201889) and 📈 KiwiSaver Pipeline (5025201954) are excluded (RSFA, 2026-11-02: boards in progress).
 const SPECS = {
   leads:               { boardId: '2074688480', rule: 'cp' },
   mortgageApp:         { boardId: '5025483251', rule: 'cp' },
   sopMasterboard:      { boardId: '5026186805', rule: 'cp' },
-  kiwisaverPipeline:   { boardId: '5025201954', rule: 'cp' },
-  kiwisaverPipelineLegacy: { boardId: '5025201954', rule: 'cp' },
   existingKiwisaver:   { boardId: '5024672484', rule: 'cp' },
-  mortgagePipeline:    { boardId: '5025201889', rule: 'borrowers' },
   existingMortgages:   { boardId: '5024672364', rule: 'borrowers' },
   insurancePipelineByProfile: { boardId: '5025201920', rule: 'owners' },
   insurancePipelineByOwner:   { boardId: '5025201920', rule: 'owners' },

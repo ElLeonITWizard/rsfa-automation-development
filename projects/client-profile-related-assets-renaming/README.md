@@ -5,7 +5,7 @@
 | Field | Value |
 |---|---|
 | Project slug | `client-profile-related-assets-renaming` |
-| Project status | In Development (candidate assets built and tested locally; nothing deployed) |
+| Project status | Ready for Testing — `10083674` (cascade) and `9711585` (Lead) imported **inactive** on 2026-11-02 |
 | Requester | RSFA technical consultant, from conversations with Rod Schubert |
 | Technical owner | tech@rsfa.co.nz |
 | Date opened | 2026-10-31 |
@@ -13,7 +13,7 @@
 
 ## Business objective
 
-When a Client Profile is renamed, every related item (Leads, Mortgage App, SOP Masterboard, KiwiSaver, mortgages, insurance, questionnaires, Aircall calls) follows automatically, each board with its own naming rule. A Lead is renamed as soon as it is linked to a Client Profile.
+When a Client Profile is renamed, every related item (Leads, Mortgage App, SOP Masterboard, Existing KiwiSaver, Existing Mortgages, insurance, questionnaires, Aircall calls — not the in-progress Mortgage and KiwiSaver Pipelines) follows automatically, each board with its own naming rule. A Lead is renamed as soon as it is linked to a Client Profile.
 
 ## Affected systems
 
@@ -45,7 +45,7 @@ REQUIREMENTS.md "Open questions".
 |---|---|---|---|
 | Requirements | Requester (rules) / Rod: TODO: verify | 2026-10-31 | Pending |
 | Design | | | Pending |
-| Deployment | | | Pending |
+| Deployment | Requester | 2026-11-02 | Plan approved; each production write confirmed step by step |
 
 ## Project documents
 

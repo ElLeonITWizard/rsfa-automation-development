@@ -8,18 +8,18 @@ owner: RSFA
 technical_owner: tech@rsfa.co.nz
 requester: RSFA technical consultant (for Rod Schubert)
 created: 2026-10-31
-last_modified: 2026-10-31
+last_modified: 2026-11-02
 related_automations: [AUTO-NAMING-001, AUTO-LEADS-001]
 related_systems: [Monday.com, Make.com]
 ---
 
 ## Project summary
 
-Cascade Client Profile renames to related items on 12 Monday boards; rename Leads when linked to a Client Profile.
+Cascade Client Profile renames to related items on 10 Monday boards (Mortgage Pipeline and KiwiSaver Pipeline excluded, 2026-11-02); rename Leads when linked to a Client Profile.
 
 ## Current status
 
-`In Development` — design and candidate assets complete locally; nothing deployed.
+`Ready for Testing` — scenarios imported inactive in Make (2026-11-02); `1054927` change, activation, Monday webhooks and tests pending.
 
 ## Change log
 
@@ -29,6 +29,10 @@ Cascade Client Profile renames to related items on 12 Monday boards; rename Lead
 | 2026-10-31 | Design | Live current-state research (read-only); naming matrix; conflict in `1054927` found | Evidence before design | Claude | Complete | `CURRENT_STATE_REFERENCES.md`, `evidence/exports/` |
 | 2026-10-31 | Implementation | Planner, query generator, blueprint generator, 21 unit tests | Candidate build | Claude | Complete (local) | `make/`, `tests/results/2026-10-31-unit.txt` |
 | 2026-10-31 | Testing | Live read-only query check; Make schema and module validation | Validation | Claude | Passed / partially verified (TEST_PLAN) | `TEST_PLAN.md` |
+| 2026-11-02 | Requirements | Mortgage Pipeline and KiwiSaver Pipeline excluded (boards in progress); `1054927` must not overlap with the cascade; deployment plan approved; Leads back-fill requested | Requester | Claude | Confirmed | `REQUIREMENTS.md` |
+| 2026-11-02 | Implementation | Planner and query reduced to 12 lookups on 10 boards; 21/21 tests | Scope change | Claude | Complete | `tests/results/2026-11-02-unit.txt` |
+| 2026-11-02 | Deployment | Steps 0–2: backups taken; hook `4480926` created; scenario `10083674` imported **inactive**; `9711585` updated, **inactive** | Approved plan | Claude | Done (no production behaviour change) | `DEPLOYMENT_PLAN.md` |
+| 2026-11-02 | Deployment | `1054927` revision prepared (4 overlapping routes, 41 → 21 modules), not applied; Leads back-fill dry run (15 renames proposed) | Approved plan | Claude | Awaiting confirmation | `evidence/logs/2026-11-02-leads-backfill-dry-run.md` |
 
 ## Requirement changes
 

@@ -8,7 +8,7 @@ owner: RSFA
 technical_owner: tech@rsfa.co.nz
 requester: RSFA technical consultant (for Rod Schubert)
 created: 2026-10-31
-last_modified: 2026-10-31
+last_modified: 2026-11-02
 related_automations: [AUTO-NAMING-001, AUTO-LEADS-001]
 related_systems: [Monday.com, Make.com]
 ---
@@ -41,11 +41,26 @@ flowchart LR
 
 1. **New scenario** `M.com: Related Assets Renaming after Client Profile Rename (Nov 2026)` — blueprint `make/blueprints/cp-rename-cascade.candidate-v1.json`.
 2. **Completed scenario** `9711585` `M.com: Lead Rename by ClientProfile (Mar 2026)` — blueprint `make/blueprints/lead-rename-by-client-profile.candidate-v1.json` (keeps hook `4335040`).
-3. **Prerequisite change to `1054927`**: remove the "Mortgage Pipeline Exists" (modules 42, 44, 46, 93, 92, 47) and "Existing Mortgage Exists" (48, 49, 50, 95, 94, 51) routes, which name mortgages with the Client Profile name. Borrowers is the confirmed rule (2026-10-31). If these routes stay, they race with the cascade and the final name depends on which run finishes last.
+3. **Prerequisite change to `1054927`** (revised 2026-11-02: no overlap with the cascade). Remove the routes the cascade now owns:
+   - "Existing Mortgage Exists" (48, 49, 50, 51, 94, 95): wrong rule (CP name, not Borrowers) and races with the cascade.
+   - "Existing KiwiSaver Exists" (65, 66, 67, 68, 98, 99).
+   - "Contact has Insurance Pipeline Policies Associated" (83, 88, 73, 85).
+   - "Contact has Existing Insurance Policies Associated" (84, 87, 80, 86).
+
+   Keep:
+   - The First/Last name update (101).
+   - The Client Profile rename (32, 30), which is what fires the cascade on a Contact rename.
+   - The "Mortgage Pipeline Exists" and "KiwiSaver Pipeline Exists" routes. Those boards are out of the cascade (in progress), so keeping their current behaviour is not an overlap.
+
+   41 → 21 modules. **Do not deactivate `1054927`:** without it, a Contact rename would no longer rename the Client Profile, and the cascade would never fire for Contact renames.
+
+   Edge case: an insurance policy whose owner Contact has **no** Client Profile is no longer renamed when that Contact is renamed. Contacts without a Client Profile are expected to be rare. `1215342` still renames the policy on owner or provider changes.
 
 Why one cascade per profile, and not one scenario per board: one place holds every rule, one run gives one consistent result, and the rules are unit-tested (`tests/rename-planner.test.js`).
 
 Why the Contact-named boards (IQ, KQ, Aircall) are in a *Client Profile* cascade: a Contact rename already renames the profile (`1054927`). That profile rename fires this cascade, which recomputes every item from the profile's current contacts. This covers both a manual CP rename and a Contact rename.
+
+**Scope change 2026-11-02:** 💲Mortgage Pipeline and 📈 KiwiSaver Pipeline are excluded (boards in progress). The related-assets query has 12 lookups on 10 boards.
 
 ## Systems involved
 

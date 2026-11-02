@@ -8,7 +8,7 @@ owner: RSFA
 technical_owner: tech@rsfa.co.nz
 requester: RSFA technical consultant (for Rod Schubert)
 created: 2026-10-31
-last_modified: 2026-10-31
+last_modified: 2026-11-02
 related_automations: [AUTO-NAMING-001, AUTO-LEADS-001]
 related_systems: [Monday.com, Make.com]
 ---
@@ -44,15 +44,16 @@ Power Automate folder rename (unchanged); historical back-fill.
 
 | ID | Test | Expected result | Status |
 |---|---|---|---|
-| U-01 | Planner unit tests (21 cases: each rule, guards, idempotency, cap, truncation, Make-style wrapper execution, blueprint embeds the tested code) | 21/21 pass | **Passed** 2026-10-31 (`tests/results/2026-10-31-unit.txt`) |
+| U-01 | Planner unit tests (21 cases: each rule, guards, idempotency, cap, truncation, Make-style wrapper execution, blueprint embeds the tested code) | 21/21 pass | **Passed** 2026-10-31 and again 2026-11-02 after the scope change (`tests/results/2026-11-02-unit.txt`) |
 | V-01 | Related-assets query executed read-only against a real Client Profile in Monday | Executes without error; reverse filters return the linked items | **Passed** 2026-10-31 (query structure only; output not stored) |
 | V-02 | Make `validate_blueprint_schema` — Lead blueprint (full) | Valid | **Passed** 2026-10-31 |
 | V-03 | Make `validate_blueprint_schema` — cascade blueprint (same topology and module configs; the long query and code strings were shortened for the call) | Valid | **Partially verified** 2026-10-31 |
 | V-04 | Make `validate_module_configuration`: `monday:ExecuteGraphQLQueryV2` (mutation + variables), `code:ExecuteCode`, `builtin:BasicFeeder`, `gateway:WebhookRespond` | Valid | **Passed** 2026-10-31 (WebhookRespond after correcting `status` to a number) |
+| D-01 | Re-read scenario `10083674` after import | 18 modules; Code module and assets query identical to Git | **Passed** 2026-11-02 |
 | V-05 | `validate_module_configuration` for `scenario-service:CallSubscenario` | — | **Not testable** with the validator ("module not found" for app version 1); configuration copied verbatim from live scenarios `9911427`/`1054927` |
 | T-01 | Monday `challenge` handshake when registering each webhook | Monday accepts the URL | Planned |
-| T-02 | Rename a test CP manually | Test Lead, Mortgage App, SOP Masterboard, KiwiSaver Pipeline, Existing KiwiSaver renamed to the new name (AC-001) | Planned |
-| T-03 | Same test CP: Mortgage Pipeline / Existing Mortgages with test Borrowers | Named from Borrowers (`A & B`), not from the profile | Planned |
+| T-02 | Rename a test CP manually | Test Lead, Mortgage App, SOP Masterboard, Existing KiwiSaver renamed to the new name (AC-001); Mortgage Pipeline and KiwiSaver Pipeline untouched by the cascade | Planned |
+| T-03 | Same test CP: Existing Mortgages with test Borrowers | Named from Borrowers (`A & B`), not from the profile | Planned |
 | T-04 | Rename a test **Contact** | `1054927` renames the CP → the Monday webhook fires for the API rename → cascade renames IQ, KQ, Aircall test items (AC-002) | Planned |
 | T-05 | Test policies on Insurance Pipeline / Existing Insurance | `Owners & … \| Provider`, identical to what `1215342` produces | Planned |
 | T-06 | Send the same event twice | Second run: 0 renames (AC-004) | Planned |
@@ -66,7 +67,7 @@ Power Automate folder rename (unchanged); historical back-fill.
 | T-14 | Lead scenario: clear the link / link 2 CPs | No rename | Planned |
 | T-15 | Downstream: SharePoint folder of the test CP | Renamed by Power Automate as today (unchanged) | Planned |
 | T-16 | Downstream: no other scenario reacts to the renames (check Make history of `9911427`, `10037840`, `1228763`, `1232945`, `1215342`) | No unexpected runs or name flips | Planned |
-| T-17 | After the `1054927` change: rename a test Contact | No mortgage item gets the CP name; KiwiSaver and insurance branches unchanged | Planned |
+| T-17 | After the `1054927` change: rename a test Contact | CP renamed by `1054927`; Existing Mortgages / Existing KiwiSaver / insurance renamed only by the cascade; Mortgage Pipeline and KiwiSaver Pipeline still renamed by `1054927` as before | Planned |
 
 ## Duplicate-prevention checks
 

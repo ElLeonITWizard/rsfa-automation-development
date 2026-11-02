@@ -8,7 +8,7 @@ owner: RSFA
 technical_owner: tech@rsfa.co.nz
 requester: RSFA technical consultant (for Rod Schubert)
 created: 2026-10-31
-last_modified: 2026-10-31
+last_modified: 2026-11-02
 related_automations: [AUTO-NAMING-001, AUTO-LEADS-001]
 related_systems: [Monday.com, Make.com]
 ---
@@ -148,12 +148,16 @@ tech@rsfa.co.nz.
 
 > Hi Rod — quick update on the Client Profile renaming work.
 >
-> Today, renaming a Client Profile only renames its SharePoint folder. Its Leads, applications, pipelines, policies, questionnaires and Aircall calls keep their old names. Leads in particular keep whatever name they had when they were created.
+> Today, renaming a Client Profile only renames its SharePoint folder. Its Leads, applications, policies, questionnaires and Aircall calls keep their old names. Leads in particular keep whatever name they had when they were created.
 >
-> We've designed one Make automation that runs whenever a Client Profile's name changes. It renames every related item using each board's naming rule: the profile name for Leads, Mortgage App, SOP Masterboard and KiwiSaver; Borrowers for mortgages; Policy Owners | Provider for insurance; the contact's name for questionnaires and calls. A second small automation renames a Lead as soon as it is linked to a Client Profile.
+> We've set up one Make automation that runs whenever a Client Profile's name changes. It renames every related item using each board's naming rule:
+> - the Client Profile name for Leads, Mortgage App, SOP Masterboard and Existing KiwiSaver;
+> - the Borrowers for Existing Mortgages;
+> - "Policy Owners | Provider" for insurance;
+> - the contact's name for the Insurance and KiwiSaver questionnaires and for Aircall calls.
 >
-> It is built and tested on our side, but nothing is live yet. Before we switch it on, two quick questions:
+> The Mortgage Pipeline and KiwiSaver Pipeline boards are left out for now, because they are still being set up. A second small automation renames a Lead as soon as it is linked to a Client Profile. We'll also bring the existing Leads in line with their Client Profile names.
+>
+> Everything is built and checked on our side, and we'll test it with dummy records before switching it on. Two quick questions:
 > 1. Some item names have extra notes typed after the client name. The automation would remove them. Is that OK, or should we be able to "lock" a name?
-> 2. Can you confirm KiwiSaver items should carry the Client Profile name, and Insurance Pipeline items the same "Owners | Provider" format as Existing Insurance?
->
-> Once confirmed, we'll test it with dummy records first and then switch it on.
+> 2. Can you confirm Existing KiwiSaver items should carry the Client Profile name, and Insurance Pipeline items the same "Owners | Provider" format as Existing Insurance?

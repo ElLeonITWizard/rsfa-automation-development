@@ -8,14 +8,14 @@ owner: RSFA
 technical_owner: tech@rsfa.co.nz
 requester: RSFA technical consultant (for Rod Schubert)
 created: 2026-10-31
-last_modified: 2026-10-31
+last_modified: 2026-11-02
 related_automations: [AUTO-NAMING-001, AUTO-LEADS-001]
 related_systems: [Monday.com, Make.com]
 ---
 
 ## Deployment status
 
-Not started. **Every step below that writes to Make or Monday needs explicit approval of that exact step.**
+**Plan approved by the requester on 2026-11-02.** Steps 0–2 done (inactive assets only; production behaviour unchanged). Step 3 (`1054927`) is prepared, with the revised scope (DESIGN §3), and awaits confirmation of the exact module removal. Monday webhooks are created by the requester (steps 4 and 6).
 
 ## Deployment objective
 
@@ -29,7 +29,7 @@ Make `eu2.make.com`, organisation `882256` "RSFA", team `85772` "RSFA ". Folder:
 
 | Resource | Action |
 |---|---|
-| Make scenario `1054927` | Update: delete routes "Mortgage Pipeline Exists" (modules 42, 44, 46, 47, 92, 93) and "Existing Mortgage Exists" (48, 49, 50, 51, 94, 95). Nothing else changes |
+| Make scenario `1054927` | Update (revised 2026-11-02): delete routes "Existing Mortgage Exists" (48, 49, 50, 51, 94, 95), "Existing KiwiSaver Exists" (65, 66, 67, 68, 98, 99), insurance pipeline (83, 88, 73, 85) and existing insurance (84, 87, 80, 86). 41 → 21 modules. Nothing else changes |
 | Make hook (new) "CP Rename Cascade Webhook" | Create (gateway-webhook, team `85772`) |
 | Make scenario (new) `M.com: Related Assets Renaming after Client Profile Rename (Nov 2026)` | Create from `make/blueprints/cp-rename-cascade.candidate-v1.json` with the new hook ID, **inactive** |
 | Make scenario `9711585` | Update its blueprint to `make/blueprints/lead-rename-by-client-profile.candidate-v1.json` (same hook `4335040`), inactive |
@@ -65,10 +65,10 @@ Business hours NZ, when tech@rsfa.co.nz can watch the first runs (renames are vi
 
 | Step | Action | Target | Expected result | Validation | Owner | Status |
 |---|---|---|---|---|---|---|
-| 0 | Export current production state (full blueprints, scheduling, activation) | `1054927`, `9711585` | Files stored (redacted) | Files present | tech@ | Not started |
-| 1 | Create the hook and import the cascade **inactive** | New scenario | Scenario exists, inactive | Editor shows 18 modules (including error handlers); the Code module contains `rename-planner.js` | tech@ | Not started |
-| 2 | Update `9711585` with the Lead candidate, still inactive | `9711585` | Inactive, hook `4335040` | Editor review | tech@ | Not started |
-| 3 | Remove the two mortgage routes from `1054927` (keep it active) | `1054927` | Only CP, KiwiSaver and insurance branches remain | Diff against the step-0 export: exactly 12 modules removed; T-17 | tech@ | Not started |
+| 0 | Export current production state (full blueprints, scheduling, activation) | `1054927`, `9711585` | Files stored (redacted) | Files present | Claude | **Done 2026-11-02.** Full exports kept outside Git (they contain sample data and a webhook URL). `1054927` was unchanged since the 2026-10-31 extract: active, folder `296569`, immediate scheduling. `9711585` was inactive |
+| 1 | Create the hook and import the cascade **inactive** | New scenario | Scenario exists, inactive | Editor shows 18 modules (including error handlers); the Code module contains `rename-planner.js` | Claude | **Done 2026-11-02.** Hook `4480926` "CP Rename Cascade Webhook"; scenario **`10083674`**, folder `296569`, inactive, not invalid. Re-read: 18 modules, Code module and query byte-identical to Git |
+| 2 | Update `9711585` with the Lead candidate, still inactive | `9711585` | Inactive, hook `4335040` | Editor review | Claude | **Done 2026-11-02.** Inactive, not invalid, hook `4335040` |
+| 3 | Remove the 4 overlapping routes from `1054927` (keep it active) | `1054927` | First/Last name, CP rename, Mortgage Pipeline and KiwiSaver Pipeline branches remain | Diff against the step-0 export: exactly 20 modules removed (41 → 21); T-17 | Claude | Prepared; awaiting confirmation |
 | 4 | Activate the cascade, then register the Monday `change_name` webhook | CP board | Challenge answered (T-01) | Monday shows the webhook | tech@ | Not started |
 | 5 | Run T-02…T-12, T-15, T-16 with fictional items | — | All Passed | TEST_PLAN updated with results | tech@ | Not started |
 | 6 | Activate `9711585`, register the Leads column webhook | Leads board | Challenge answered | T-13, T-14 | tech@ | Not started |

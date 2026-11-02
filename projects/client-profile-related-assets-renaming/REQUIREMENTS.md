@@ -8,7 +8,7 @@ owner: RSFA
 technical_owner: tech@rsfa.co.nz
 requester: RSFA technical consultant (for Rod Schubert)
 created: 2026-10-31
-last_modified: 2026-10-31
+last_modified: 2026-11-02
 related_automations: [AUTO-NAMING-001, AUTO-LEADS-001]
 related_systems: [Monday.com, Make.com]
 ---
@@ -38,14 +38,15 @@ Whenever a Client Profile's name changes, every related item on the boards liste
 
 ### In scope
 
-- New Make scenario reacting to a Client Profile name change, renaming related items on 12 boards (BR-001…BR-012).
+- New Make scenario reacting to a Client Profile name change, renaming related items on 10 boards (BR-001…BR-012 except BR-004 and BR-006, which are out of scope since 2026-11-02).
 - Completing the inactive Make scenario `9711585` so a Lead is renamed when its `Client Profiles` column changes.
-- The prerequisite change to `1054927` so it no longer names the mortgage boards with the Client Profile name.
+- The prerequisite change to `1054927`: remove every branch that overlaps with the cascade (Existing Mortgage, Existing KiwiSaver, Insurance Pipeline, Existing Insurance). Requester, 2026-11-02: the two scenarios must not overlap.
 
 ### Out of scope
 
 - SharePoint folder renaming (already Power Automate; unchanged).
 - A historical back-fill of existing drift (supported by the design via `manual_rerun`; a bulk run needs separate approval).
+- 💲Mortgage Pipeline (`5025201889`) and 📈 KiwiSaver Pipeline (`5025201954`): boards still in progress (items without Borrowers / Client Profiles, unusual names). Excluded by the requester on 2026-11-02; revisit when the boards are finalised.
 - Network contacts (`5031819688`) on the Aircall board: they do not belong to a Client Profile.
 - Changing the Client Profile naming rule itself (`1054927`/`1054932`).
 
@@ -78,9 +79,9 @@ Whenever a Client Profile's name changes, every related item on the boards liste
 | BR-001 | Leads `2074688480`: Client Profile name | Request + `8800779` |
 | BR-002 | Mortgage App `5025483251`: Client Profile name | Request + `8410524` |
 | BR-003 | SOP Masterboard `5026186805`: Client Profile name | Request + `10037840` |
-| BR-004 | KiwiSaver Pipeline `5025201954`: Client Profile name | `1054927` (live). Request: "pipelines in progress" — TODO: verify with Rod |
+| BR-004 | ~~KiwiSaver Pipeline `5025201954`: Client Profile name~~ **Out of scope (2026-11-02)** | Requester |
 | BR-005 | Existing KiwiSaver `5024672484`: Client Profile name | `1054927` (live) — TODO: verify with Rod |
-| BR-006 | Mortgage Pipeline `5025201889`: Borrowers, `"A, B"` → `"A & B"` | Requester 2026-10-31 + `1232945` |
+| BR-006 | ~~Mortgage Pipeline `5025201889`: Borrowers~~ **Out of scope (2026-11-02)** | Requester |
 | BR-007 | Existing Mortgages `5024672364`: Borrowers, `"A, B"` → `"A & B"` | Request + requester 2026-10-31 + `1228763` |
 | BR-008 | Insurance Pipeline `5025201920`: Policy Owners joined `" & "` + `" \| Provider"` when set | `1215342` (live) |
 | BR-009 | Existing Insurance `5024672437`: Policy Owners joined `" & "` + `" \| Insurance Provider"` when set | Request + `1215342` |
@@ -126,7 +127,7 @@ Previous names are recoverable only from Make execution history (retention: TODO
 
 | ID | Criterion | Linked requirement(s) | Status |
 |---|---|---|---|
-| AC-001 | Renaming a test Client Profile renames its test Lead, Mortgage App, SOP Masterboard and KiwiSaver items to the new profile name within 2 minutes. | FR-001, FR-002 | Planned |
+| AC-001 | Renaming a test Client Profile renames its test Lead, Mortgage App, SOP Masterboard and Existing KiwiSaver items to the new profile name within 2 minutes. | FR-001, FR-002 | Planned |
 | AC-002 | Renaming a test Contact (via `1054927`) renames the test IQ, KQ and Aircall items, and the mortgage items follow Borrowers, not the profile name. | FR-002, BR-006, BR-007 | Planned |
 | AC-003 | Linking a test Lead to a test Client Profile renames the Lead to the profile name. | FR-004 | Planned |
 | AC-004 | A second identical event renames nothing. | NFR-002 | Planned |
@@ -140,8 +141,8 @@ Previous names are recoverable only from Make execution history (retention: TODO
 ## Open questions
 
 - **Q1.** Manual suffixes on names (seen live on a Mortgage Pipeline item) are removed when the rule is reapplied. Is that acceptable, or must some names be protected (for example, a "Lock name" checkbox)?
-- **Q2.** Confirm with Rod BR-004/BR-005 (KiwiSaver boards named from the Client Profile) and BR-008 (Insurance Pipeline uses the same rule as Existing Insurance).
-- **Q3.** Back-fill: run the cascade once for every Client Profile to fix existing drift? (Bulk change; needs approval and an operations estimate.)
+- **Q2.** Confirm with Rod BR-005 (Existing KiwiSaver named from the Client Profile) and BR-008 (Insurance Pipeline uses the same rule as Existing Insurance).
+- **Q3.** Back-fill: run the cascade once for every Client Profile to fix existing drift? (Bulk change; needs approval and an operations estimate.) **Leads:** requested by the requester on 2026-11-02; dry run in `evidence/logs/2026-11-02-leads-backfill-dry-run.md`.
 
 ## Approval status
 

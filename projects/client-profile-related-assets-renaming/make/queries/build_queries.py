@@ -38,16 +38,15 @@ def text(name, col):
     return f'{name}: column_values(ids: ["{col}"]) {{ text }}'
 
 
+# Excluded on 2026-11-02 at RSFA request: 💲Mortgage Pipeline (5025201889) and 📈 KiwiSaver Pipeline
+# (5025201954) are boards still in progress (items without Borrowers / Client Profiles, unusual names).
 ALIASES = [
     # rule cp — link column must hold exactly this profile
     alias("leads", 2074688480, "board_relation_mm7c1wcw", "profile", link("board_relation_mm7c1wcw")),
     alias("mortgageApp", 5025483251, "board_relation_mm6fr9y4", "profile", link("board_relation_mm6fr9y4")),
     alias("sopMasterboard", 5026186805, "board_relation_mm8fc6yd", "profile", link("board_relation_mm8fc6yd")),
-    alias("kiwisaverPipeline", 5025201954, "board_relation_mm6qp8dt", "profile", link("board_relation_mm6qp8dt")),
-    alias("kiwisaverPipelineLegacy", 5025201954, "board_relation_mkxpqnck", "profile", link("board_relation_mkxpqnck")),
     alias("existingKiwisaver", 5024672484, "board_relation_mktzw3h0", "profile", link("board_relation_mktzw3h0")),
     # rule borrowers — found through the Client Profiles column, named from Borrowers
-    alias("mortgagePipeline", 5025201889, "board_relation_mkyercdt", "profile", people("board_relation_mkyf123a")),
     alias("existingMortgages", 5024672364, "connect_boards7", "profile", people("board_relation_mkyjjs0w")),
     # rule owners — found through the Client Profiles column or a Policy Owner contact
     alias("insurancePipelineByProfile", 5025201920, "board_relation_mkxpqnck", "profile",

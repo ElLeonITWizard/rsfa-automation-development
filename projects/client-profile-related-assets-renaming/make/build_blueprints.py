@@ -134,7 +134,7 @@ def cascade():
                  {"a": "{{1.event.type}}", "b": "^(update_name|change_name|manual_rerun)$", "o": "text:pattern"}]]},
              onerror=[notify(13, "Client Profile rename cascade: reading Client Profile <b>" + PULSE + "</b> failed. "
                                  "{{4.error.message}}. Nothing was renamed.", 600, 300), ignore(14, 900, 300)]),
-        dict(gql_module(5, "Read related assets (15 lookups)", assets_query, [], 900, 0),
+        dict(gql_module(5, "Read related assets (12 lookups)", assets_query, [], 900, 0),
              filter={"name": "Profile found", "conditions": [[{"a": "{{" + PROFILE + ".id}}", "o": "exist"}]]},
              onerror=[notify(15, "Client Profile rename cascade: reading the related assets of Client Profile <b>" + PULSE + "</b> failed. "
                                  "{{5.error.message}}. Nothing was renamed.", 900, 300), ignore(16, 1200, 300)]),
