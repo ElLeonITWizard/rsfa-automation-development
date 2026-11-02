@@ -19,7 +19,7 @@ Cascade Client Profile renames to related items on 10 Monday boards (Mortgage Pi
 
 ## Current status
 
-`Ready for Testing` — scenarios imported inactive in Make (2026-11-02); `1054927` change, activation, Monday webhooks and tests pending.
+`Deployed - Pending Validation` — `1054927` changed, `10083674` and `9711585` active (2026-11-02); Monday webhooks (requester) and tests T-01…T-17 pending.
 
 ## Change log
 
@@ -32,7 +32,9 @@ Cascade Client Profile renames to related items on 10 Monday boards (Mortgage Pi
 | 2026-11-02 | Requirements | Mortgage Pipeline and KiwiSaver Pipeline excluded (boards in progress); `1054927` must not overlap with the cascade; deployment plan approved; Leads back-fill requested | Requester | Claude | Confirmed | `REQUIREMENTS.md` |
 | 2026-11-02 | Implementation | Planner and query reduced to 12 lookups on 10 boards; 21/21 tests | Scope change | Claude | Complete | `tests/results/2026-11-02-unit.txt` |
 | 2026-11-02 | Deployment | Steps 0–2: backups taken; hook `4480926` created; scenario `10083674` imported **inactive**; `9711585` updated, **inactive** | Approved plan | Claude | Done (no production behaviour change) | `DEPLOYMENT_PLAN.md` |
-| 2026-11-02 | Deployment | `1054927` revision prepared (4 overlapping routes, 41 → 21 modules), not applied; Leads back-fill dry run (15 renames proposed) | Approved plan | Claude | Awaiting confirmation | `evidence/logs/2026-11-02-leads-backfill-dry-run.md` |
+| 2026-11-02 | Deployment | `1054927` revision prepared (4 overlapping routes, 41 → 21 modules); Leads back-fill dry run (15 renames proposed) | Approved plan | Claude | Superseded by the next rows | `evidence/logs/2026-11-02-leads-backfill-dry-run.md` |
+| 2026-11-02 | Deployment | `1054927` change applied (03:15Z, 20 modules removed, verified); `10083674` and `9711585` **activated**. The queued pre-activation challenge was processed (2 operations, status warning, nothing renamed) | Requester confirmation | Claude | Deployed - Pending Validation (Monday webhooks + T-tests pending) | `DEPLOYMENT_PLAN.md` |
+| 2026-11-02 | Back-fill | 15 Leads renamed to their Client Profile name (Monday API, one mutation; re-read before writing, response confirmed every new name). Lead `2844833952` excluded (duplicate contact in its CP) | Requester confirmation | Claude | Done | `evidence/logs/2026-11-02-leads-backfill-dry-run.md` |
 
 ## Requirement changes
 
