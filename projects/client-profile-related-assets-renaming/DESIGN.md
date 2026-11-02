@@ -120,7 +120,7 @@ Board, column and connection IDs are listed in `make/queries/build_queries.py` a
 
 ## Duplicate prevention
 
-The planner deduplicates `boardId:itemId`. The scenario is `sequential`, so two events for the same profile are processed one after the other, and the second finds nothing to change.
+The planner deduplicates `boardId:itemId`. The scenarios are **not** sequential (2026-11-02): sequential processing makes Make answer "Accepted" itself, so the challenge cannot be returned to Monday. Two near-simultaneous events for the same profile may run in parallel. Both recompute from current data, so they converge on the same names; at worst a name is written twice.
 
 ## Idempotency
 

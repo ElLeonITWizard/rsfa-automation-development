@@ -51,7 +51,7 @@ Power Automate folder rename (unchanged); historical back-fill.
 | V-04 | Make `validate_module_configuration`: `monday:ExecuteGraphQLQueryV2` (mutation + variables), `code:ExecuteCode`, `builtin:BasicFeeder`, `gateway:WebhookRespond` | Valid | **Passed** 2026-10-31 (WebhookRespond after correcting `status` to a number) |
 | D-01 | Re-read scenario `10083674` after import | 18 modules; Code module and assets query identical to Git | **Passed** 2026-11-02 |
 | V-05 | `validate_module_configuration` for `scenario-service:CallSubscenario` | — | **Not testable** with the validator ("module not found" for app version 1); configuration copied verbatim from live scenarios `9911427`/`1054927` |
-| T-01 | Monday `challenge` handshake when registering each webhook | Monday accepts the URL | Planned |
+| T-01 | Monday `challenge` handshake when registering each webhook | Monday accepts the URL | **Passed** 2026-11-02 (after turning off sequential processing; first attempts Failed) |
 | T-02 | Rename a test CP manually | Test Lead, Mortgage App, SOP Masterboard, Existing KiwiSaver renamed to the new name (AC-001); Mortgage Pipeline and KiwiSaver Pipeline untouched by the cascade | Planned |
 | T-03 | Same test CP: Existing Mortgages with test Borrowers | Named from Borrowers (`A & B`), not from the profile | Planned |
 | T-04 | Rename a test **Contact** | `1054927` renames the CP → the Monday webhook fires for the API rename → cascade renames IQ, KQ, Aircall test items (AC-002) | Planned |

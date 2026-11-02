@@ -43,7 +43,7 @@ Make editor access; Monday admin (to delete webhooks).
 
 1. **Deactivate** the cascade scenario (immediate stop; the webhook queue keeps incoming events, which can then be deleted).
 2. **Deactivate** `9711585`.
-3. Delete the two Monday webhooks created in steps 4 and 6 (by ID, recorded at creation). **Never delete `23873815` or other existing webhooks.**
+3. Delete the two Monday webhooks created on 2026-11-02: **`41427237`** (Client Profiles `change_name` → cascade) and **`41427223`** (Leads `board_relation_mm7c1wcw` → `9711585`): `mutation { delete_webhook(id: 41427237) { id } }`. **Never delete `23873815` or other existing webhooks.**
 4. Restore `1054927` from the step-0 export (or Make version history) only if its change itself is the problem. Note: restoring it brings back the CP-name rule for mortgages.
 
 ## Data reconciliation

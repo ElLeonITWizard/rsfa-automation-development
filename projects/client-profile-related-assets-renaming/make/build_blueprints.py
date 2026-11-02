@@ -85,9 +85,12 @@ def challenge_route(mid):
 
 SCENARIO_META = {
     "instant": True, "version": 1, "designer": {"orphans": []},
-    # sequential: webhook bundles are processed one at a time, so two renames of the same profile never race.
+    # sequential MUST stay False: with sequential processing Make queues the webhook and answers "Accepted"
+    # itself, so gateway:WebhookRespond cannot return Monday's challenge (create_webhook fails with
+    # errors.communication / 400). Found and fixed in production on 2026-11-02. Parallel runs are safe because
+    # the planner is idempotent: it recomputes names from current data and writes only differences.
     "scenario": {"roundtrips": 1, "maxErrors": 3, "autoCommit": True, "autoCommitTriggerLast": True,
-                 "sequential": True, "confidential": False, "dataloss": False, "dlq": False, "freshVariables": False},
+                 "sequential": False, "confidential": False, "dataloss": False, "dlq": False, "freshVariables": False},
 }
 
 PULSE = "{{1.event.pulseId}}"

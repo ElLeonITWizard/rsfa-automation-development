@@ -15,7 +15,7 @@ related_systems: [Monday.com, Make.com]
 
 ## Deployment status
 
-**Plan approved by the requester on 2026-11-02.** Steps 0–2 done (inactive assets only; production behaviour unchanged). Steps 3 and the activations of steps 4 and 6 done 2026-11-02, after the requester confirmed them. Monday webhooks are created by the requester; first attempt (before activation) failed with `notices.automation.create.webhooks.errors.communication`, as expected, because the scenario was not yet active to answer the challenge.
+**Plan approved by the requester on 2026-11-02.** Steps 0–2 done (inactive assets only; production behaviour unchanged). Steps 3 and the activations of steps 4 and 6 done 2026-11-02, after the requester confirmed them. Monday webhooks: the requester's attempts failed with `notices.automation.create.webhooks.errors.communication`. The first was before activation. The second failed because both scenarios had **sequential processing on**, so Make answered "Accepted" itself and never returned the challenge. Sequential was turned off on `10083674` and `9711585` (03:19Z); Claude then created both webhooks (03:20Z) at the requester's request. Both challenge runs succeeded.
 
 ## Deployment objective
 
@@ -69,9 +69,9 @@ Business hours NZ, when tech@rsfa.co.nz can watch the first runs (renames are vi
 | 1 | Create the hook and import the cascade **inactive** | New scenario | Scenario exists, inactive | Editor shows 18 modules (including error handlers); the Code module contains `rename-planner.js` | Claude | **Done 2026-11-02.** Hook `4480926` "CP Rename Cascade Webhook"; scenario **`10083674`**, folder `296569`, inactive, not invalid. Re-read: 18 modules, Code module and query byte-identical to Git |
 | 2 | Update `9711585` with the Lead candidate, still inactive | `9711585` | Inactive, hook `4335040` | Editor review | Claude | **Done 2026-11-02.** Inactive, not invalid, hook `4335040` |
 | 3 | Remove the 4 overlapping routes from `1054927` (keep it active) | `1054927` | First/Last name, CP rename, Mortgage Pipeline and KiwiSaver Pipeline branches remain | Diff against the step-0 export: exactly 20 modules removed (41 → 21); T-17 | Claude | **Done 2026-11-02 03:15Z.** Re-read: 41 → 21 modules, exactly the 20 planned IDs removed, none added; still active, not invalid |
-| 4 | Activate the cascade, then register the Monday `change_name` webhook | CP board | Challenge answered (T-01) | Monday shows the webhook | Claude / requester | `10083674` **activated 2026-11-02 03:15Z**; webhook pending (requester) |
+| 4 | Activate the cascade, then register the Monday `change_name` webhook | CP board | Challenge answered (T-01) | Monday shows the webhook | Claude / requester | `10083674` **activated 2026-11-02 03:15Z**. Monday webhook **`41427237`** (`change_name`) created by Claude at the requester's request, 03:20Z; challenge run status 1 |
 | 5 | Run T-02…T-12, T-15, T-16 with fictional items | — | All Passed | TEST_PLAN updated with results | tech@ | Not started |
-| 6 | Activate `9711585`, register the Leads column webhook | Leads board | Challenge answered | T-13, T-14 | Claude / requester | `9711585` **activated 2026-11-02 03:15Z**; webhook pending (requester) |
+| 6 | Activate `9711585`, register the Leads column webhook | Leads board | Challenge answered | T-13, T-14 | Claude / requester | `9711585` **activated 2026-11-02 03:15Z**. Monday webhook **`41427223`** (`change_specific_column_value`, `board_relation_mm7c1wcw`) created by Claude, 03:20Z; challenge run status 1 |
 | 7 | Monitoring window | — | No failure emails; no unexpected renames | Make history, daily for 1 week | tech@ | Not started |
 
 ## Activation/scheduling state

@@ -19,7 +19,7 @@ Cascade Client Profile renames to related items on 10 Monday boards (Mortgage Pi
 
 ## Current status
 
-`Deployed - Pending Validation` — `1054927` changed, `10083674` and `9711585` active (2026-11-02); Monday webhooks (requester) and tests T-01…T-17 pending.
+`Deployed - Pending Validation` — `1054927` changed; `10083674` and `9711585` active with their Monday webhooks (`41427237`, `41427223`) since 2026-11-02; tests T-02…T-17 pending.
 
 ## Change log
 
@@ -35,6 +35,7 @@ Cascade Client Profile renames to related items on 10 Monday boards (Mortgage Pi
 | 2026-11-02 | Deployment | `1054927` revision prepared (4 overlapping routes, 41 → 21 modules); Leads back-fill dry run (15 renames proposed) | Approved plan | Claude | Superseded by the next rows | `evidence/logs/2026-11-02-leads-backfill-dry-run.md` |
 | 2026-11-02 | Deployment | `1054927` change applied (03:15Z, 20 modules removed, verified); `10083674` and `9711585` **activated**. The queued pre-activation challenge was processed (2 operations, status warning, nothing renamed) | Requester confirmation | Claude | Deployed - Pending Validation (Monday webhooks + T-tests pending) | `DEPLOYMENT_PLAN.md` |
 | 2026-11-02 | Back-fill | 15 Leads renamed to their Client Profile name (Monday API, one mutation; re-read before writing, response confirmed every new name). Lead `2844833952` excluded (duplicate contact in its CP) | Requester confirmation | Claude | Done | `evidence/logs/2026-11-02-leads-backfill-dry-run.md` |
+| 2026-11-02 | Deployment | Monday webhook creation failed (`errors.communication`). Cause: sequential processing on both new scenarios, so Make answered "Accepted" and the challenge was never returned. Sequential turned off on `10083674` and `9711585`; generator fixed; webhooks `41427237` (CP `change_name`) and `41427223` (Leads `board_relation_mm7c1wcw`) created by Claude at the requester's request; both challenge runs status 1 (T-01 Passed) | Defect in candidate metadata | Claude | Fixed | `DEPLOYMENT_PLAN.md` |
 
 ## Requirement changes
 

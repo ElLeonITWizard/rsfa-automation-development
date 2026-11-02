@@ -68,7 +68,7 @@ Whenever a Client Profile's name changes, every related item on the boards liste
 | NFR-001 | Never write an empty name; never rename an item linked to several or other profiles. | Reliability | Draft |
 | NFR-002 | Idempotent: a second run over the same state renames nothing. | Reliability | Draft |
 | NFR-003 | Safety cap: more than 150 planned renames for one profile → nothing is renamed and an alert is sent. | Reliability | Draft |
-| NFR-004 | Runs are processed sequentially (no two cascades in parallel). | Reliability | Draft |
+| NFR-004 | ~~Runs are processed sequentially~~ Changed 2026-11-02: sequential processing prevents answering Monday's webhook challenge. Parallel runs are tolerated because planning is idempotent (recomputed from current data, write-if-different). | Reliability | Revised |
 | NFR-005 | Alerts and logs carry IDs and reason codes, not client names. | Security | Draft |
 | NFR-006 | No new rename loop: the cascade does not rename Contacts or Client Profiles. | Reliability | Draft |
 
