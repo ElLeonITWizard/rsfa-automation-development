@@ -99,6 +99,16 @@ Same as other Make automations (`knowledge/08_TICKET_INVESTIGATION_PLAYBOOK.md`)
 | `MISSING_ALIAS_…` | Query edited in Make without the planner | Re-import the generated blueprint |
 | Item kept its name | `skipped` reason (multiple profiles, no Borrowers, …) | Fix the item's links; re-run |
 
+## Maintenance rules (learned in production, 2026-11-02)
+
+- Never write double curly braces in `rename-planner.js`, not even in comments: Make evaluates them inside the Code field, and the module silently returns an empty result. A unit test enforces this.
+- Keep sequential processing **off** on `10083674` and `9711585`: otherwise Make answers Monday's webhook challenge itself, and webhook creation or renewal fails.
+- Execution details (module outputs) are not readable through the Make API in this account; use the Make UI, or a temporary probe as described in CHANGELOG.
+
+## Test fixtures kept
+
+`2896920831` "Existing KiwiSaver" and `2896920905` "Existing Mortgages" test items, linked to test CP `2519813525`. Kept for regression tests; archive them when they are no longer needed.
+
 ## Known limitations
 
 - Manual suffixes in names are overwritten (REQUIREMENTS Q1).

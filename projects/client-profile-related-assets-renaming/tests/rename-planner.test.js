@@ -222,6 +222,12 @@ test('blueprint embeds exactly the tested planner and the generated query', () =
   assert.ok(!JSON.stringify(bp).includes('hook.eu2.make.com'), 'no webhook URL in the blueprint');
 });
 
+test('planner source contains no double curly braces (Make evaluates them inside the Code field)', () => {
+  const fs = require('fs');
+  const code = fs.readFileSync(path.join(__dirname, '..', 'make', 'code', 'rename-planner.js'), 'utf8');
+  assert.ok(!code.includes('{' + '{') && !code.includes('}' + '}'), 'double curly braces found');
+});
+
 let failed = 0;
 for (const [name, fn] of tests) {
   try { fn(); console.log(`PASS ${name}`); } catch (e) { failed += 1; console.log(`FAIL ${name}\n  ${e.message}`); }

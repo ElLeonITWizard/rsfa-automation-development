@@ -4,7 +4,9 @@
 // "M.com: Related Assets Renaming after Client Profile Rename (Nov 2026)".
 // The same file is loaded by tests/rename-planner.test.js (Node), so the logic Make runs is the logic tested.
 //
-// Make provides `input` and uses the top-level `return` value as the module output (`{{N.result.*}}`).
+// Make provides `input` and uses the top-level `return` value as the module output (mapped as N.result.* in later modules).
+// NEVER write double curly braces anywhere in this file, comments included: Make evaluates them as mapping
+// expressions inside the Code field, and the module then returns an empty result (production incident 2026-11-02).
 // Inputs (mapped in the module):
 //   profile     Monday GraphQL `data` of the Client Profile read (module 4): { items: [ ... ] }  (object or JSON text)
 //   assets      Monday GraphQL `data` of the related-assets read (module 5)                       (object or JSON text)
@@ -145,10 +147,11 @@ function plan(input) {
   return out;
 }
 
-// Node (tests) export; ignored by Make, which runs the file body with `input` defined.
-if (typeof module !== 'undefined' && module.exports) {
+// Node (tests) export. In Make's runtime `module` is a function without `exports`, so this is skipped.
+if (typeof module !== 'undefined' && module && module.exports) {
   module.exports = { plan, SPECS };
 }
-if (typeof input !== 'undefined') {
-  return plan(input); // eslint-disable-line no-restricted-syntax -- Make Code module returns its output
-}
+// Make's Code module only captures a `return` written at the top level of the code. A `return` nested in an
+// `if` block gives an empty result (found in production on 2026-11-02). Keep this as a single top-level return.
+// In Node (require), `input` is undefined and this returns undefined.
+return typeof input !== 'undefined' ? plan(input) : undefined;

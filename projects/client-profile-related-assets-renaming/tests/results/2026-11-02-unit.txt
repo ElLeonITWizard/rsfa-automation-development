@@ -1,4 +1,4 @@
-# node tests/rename-planner.test.js — 2026-11-02T03:10Z — node v22.23.4 — after excluding Mortgage/KiwiSaver Pipeline
+# node tests/rename-planner.test.js — 2026-11-02T03:44Z — node v22.23.4 — after code fix
 PASS cp rule: Lead, Mortgage App, SOP Masterboard, Existing KiwiSaver take the profile name
 PASS cp rule: item linked to several profiles is skipped, not renamed
 PASS in-progress pipelines (Mortgage Pipeline, KiwiSaver Pipeline) are not in scope
@@ -20,5 +20,6 @@ PASS too-long target is skipped (Monday 255-char name limit)
 PASS query aliases and planner SPECS stay in sync
 PASS Make-style execution: file body run as a function of `input` (no `module`) returns the plan
 PASS blueprint embeds exactly the tested planner and the generated query
+PASS planner source contains no double curly braces (Make evaluates them inside the Code field)
 
-21/21 passed
+22/22 passed

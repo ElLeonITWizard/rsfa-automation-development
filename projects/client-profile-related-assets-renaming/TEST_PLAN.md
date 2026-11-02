@@ -44,7 +44,7 @@ Power Automate folder rename (unchanged); historical back-fill.
 
 | ID | Test | Expected result | Status |
 |---|---|---|---|
-| U-01 | Planner unit tests (21 cases: each rule, guards, idempotency, cap, truncation, Make-style wrapper execution, blueprint embeds the tested code) | 21/21 pass | **Passed** 2026-10-31 and again 2026-11-02 after the scope change (`tests/results/2026-11-02-unit.txt`) |
+| U-01 | Planner unit tests (22 cases since 2026-11-02, incl. "no double curly braces in the source"; each rule, guards, idempotency, cap, truncation, Make-style wrapper execution, blueprint embeds the tested code) | all pass | **Passed** 2026-10-31; 2026-11-02 21/21 after the scope change and 22/22 after the code fix (`tests/results/2026-11-02-unit.txt`) |
 | V-01 | Related-assets query executed read-only against a real Client Profile in Monday | Executes without error; reverse filters return the linked items | **Passed** 2026-10-31 (query structure only; output not stored) |
 | V-02 | Make `validate_blueprint_schema` — Lead blueprint (full) | Valid | **Passed** 2026-10-31 |
 | V-03 | Make `validate_blueprint_schema` — cascade blueprint (same topology and module configs; the long query and code strings were shortened for the call) | Valid | **Partially verified** 2026-10-31 |
@@ -52,22 +52,22 @@ Power Automate folder rename (unchanged); historical back-fill.
 | D-01 | Re-read scenario `10083674` after import | 18 modules; Code module and assets query identical to Git | **Passed** 2026-11-02 |
 | V-05 | `validate_module_configuration` for `scenario-service:CallSubscenario` | — | **Not testable** with the validator ("module not found" for app version 1); configuration copied verbatim from live scenarios `9911427`/`1054927` |
 | T-01 | Monday `challenge` handshake when registering each webhook | Monday accepts the URL | **Passed** 2026-11-02 (after turning off sequential processing; first attempts Failed) |
-| T-02 | Rename a test CP manually | Test Lead, Mortgage App, SOP Masterboard, Existing KiwiSaver renamed to the new name (AC-001); Mortgage Pipeline and KiwiSaver Pipeline untouched by the cascade | Planned |
-| T-03 | Same test CP: Existing Mortgages with test Borrowers | Named from Borrowers (`A & B`), not from the profile | Planned |
-| T-04 | Rename a test **Contact** | `1054927` renames the CP → the Monday webhook fires for the API rename → cascade renames IQ, KQ, Aircall test items (AC-002) | Planned |
+| T-02 | Rename a test CP manually | Test Lead, Mortgage App, SOP Masterboard, Existing KiwiSaver renamed to the new name (AC-001); Mortgage Pipeline and KiwiSaver Pipeline untouched by the cascade | **Partially verified** 2026-11-02. Test CP `2519813525` renamed and restored. Existing KiwiSaver test item followed both times (runs `1ae3f294…`, 6 ops; restore run 03:43, 6 ops). Existing Mortgage kept its Borrowers name. Lead / Mortgage App / SOP Masterboard not covered (no safe test items: creating them triggers other flows) |
+| T-03 | Same test CP: Existing Mortgages with test Borrowers | Named from Borrowers (`A & B`), not from the profile | **Passed** 2026-11-02 (test item `2896920905`) |
+| T-04 | Rename a test **Contact** | `1054927` renames the CP → the Monday webhook fires for the API rename → cascade renames IQ, KQ, Aircall test items (AC-002) | **Passed** for the chain, 2026-11-02. Contact `2654609722` renamed and restored; `1054927` (9 ops) renamed the CP; the API rename fired webhook `41427237`; the cascade renamed both test items (7 ops). The first attempt renamed nothing because of the Code-module defect (see CHANGELOG). IQ / KQ / Aircall rules not exercised live: no safe test items; covered by unit tests only |
 | T-05 | Test policies on Insurance Pipeline / Existing Insurance | `Owners & … \| Provider`, identical to what `1215342` produces | Planned |
-| T-06 | Send the same event twice | Second run: 0 renames (AC-004) | Planned |
+| T-06 | Send the same event twice | Second run: 0 renames (AC-004) | **Passed** 2026-11-02: two Make replays, 4 ops each, nothing renamed |
 | T-07 | Test Lead linked to two test CPs | Lead untouched; listed in `skipped` (AC-005) | Planned |
 | T-08 | Test Aircall item with `Contact Created/Updated` = `Revert` | Untouched | Planned |
 | T-09 | Test CP with no contacts | Contact lookups use `0`; CP-named items still renamed; no error | Planned |
 | T-10 | `manual_rerun` event for a test CP | Same result as a rename | Planned |
 | T-11 | Force a rename failure (for example a deleted test item between read and write) | Email from `8732008` with board/item IDs; the other items renamed | Planned |
 | T-12 | `maxRenames` set temporarily to 1 with 2 changes | `TOO_MANY_RENAMES` email; nothing renamed | Planned |
-| T-13 | Lead scenario: link a test Lead to a test CP | Lead renamed to the CP name (AC-003) | Planned |
+| T-13 | Lead scenario: link a test Lead to a test CP | Lead renamed to the CP name (AC-003) | **Not testable** safely (creating a Lead triggers `8800779`). Validate on the next real Lead: `9711585` run history + Lead name |
 | T-14 | Lead scenario: clear the link / link 2 CPs | No rename | Planned |
 | T-15 | Downstream: SharePoint folder of the test CP | Renamed by Power Automate as today (unchanged) | Planned |
-| T-16 | Downstream: no other scenario reacts to the renames (check Make history of `9911427`, `10037840`, `1228763`, `1232945`, `1215342`) | No unexpected runs or name flips | Planned |
-| T-17 | After the `1054927` change: rename a test Contact | CP renamed by `1054927`; Existing Mortgages / Existing KiwiSaver / insurance renamed only by the cascade; Mortgage Pipeline and KiwiSaver Pipeline still renamed by `1054927` as before | Planned |
+| T-16 | Downstream: no other scenario reacts to the renames (check Make history of `9911427`, `10037840`, `1228763`, `1232945`, `1215342`) | No unexpected runs or name flips | **Passed** 2026-11-02 for the test window: no runs of `1228763`, `1232945`, `1215342`, `9711585`, `8732008`. `1054932` ran once (03:23, 3 ops) when the test items were linked to the CP; it rewrote the same CP name, with no effect |
+| T-17 | After the `1054927` change: rename a test Contact | CP renamed by `1054927`; Existing Mortgages / Existing KiwiSaver / insurance renamed only by the cascade; Mortgage Pipeline and KiwiSaver Pipeline still renamed by `1054927` as before | **Partially verified** 2026-11-02: `1054927` ran with 9 ops and renamed the CP; Existing Mortgages / Existing KiwiSaver renamed by the cascade only. Pipelines not exercised (test CP has none) |
 
 ## Duplicate-prevention checks
 
