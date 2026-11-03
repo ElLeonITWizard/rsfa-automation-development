@@ -11,4 +11,4 @@ last_modified: 2026-11-03
 
 See [DESIGN.md §1](./DESIGN.md#1-requirements) (FR-001…FR-005, NFR-001…NFR-002, open question Q1). Source: [evidence/original-request.md](./evidence/original-request.md).
 
-Status: Draft — requirements stated by the requester on 2026-11-03; Q1 open.
+Status: Confirmed by the requester on 2026-11-03. Q1 answered **yes**: a hand-typed name is replaced by the contacts' names once contacts are linked.

@@ -86,14 +86,14 @@ Not sequential (Monday's webhook challenge requires it; see the cascade project)
 |---|---|---|---|
 | U-01 | Unit tests (14) | Pass | **Passed** 2026-11-03 |
 | V-01 | Make schema + FunctionSleep config validation | Valid | **Passed** 2026-11-03 |
-| T-01 | Webhook challenge for both Monday webhooks | Accepted | Planned |
-| T-02 | **Manual, no contacts**: create "ZZ TEST manual" | Not renamed; run ends at `NO_CONTACTS`; no email | Planned |
-| T-03 | Manual: link 1 test contact to T-02 | Renamed to the contact name; SP folder renamed | Planned |
-| T-04 | Add 2nd contact | "A & B"; cascade runs | Planned |
-| T-05 | Remove a contact (CP `2519772272` case) | Back to "A" | Planned |
+| T-01 | Webhook challenge for both Monday webhooks | Accepted | **Passed** 2026-11-03 (`41501839`, `41501840` created) |
+| T-02 | **Manual, no contacts**: create "ZZ TEST manual" | Not renamed; run ends at `NO_CONTACTS`; no email | **Passed** 2026-11-03: CP `2898278800`, run 11:46:19 (4 ops, 94 s); name and SP folder unchanged |
+| T-03 | Manual: link 1 test contact to T-02 | Renamed to the contact name; SP folder renamed | **Passed** (11:48:19, 5 ops). Name and folder renamed; cascade ran (nothing to rename); `1054932` also ran and wrote the same name (transition) |
+| T-04 | Add 2nd contact | "A & B"; cascade runs | **Passed** (11:49:57). Order = Monday's stored link order (the API stored the IDs in a different order than sent); `1054932` produced the same name |
+| T-05 | Remove a contact (CP `2519772272` case) | Back to "A" | **Passed** (11:51:25, 5 ops). Name and folder renamed; `1054932` ran with 2 ops and did **not** rename (gap confirmed and covered) |
 | T-06 | **SuperForm**: submit the real "SF: Profile Opening" form with a test contact (done by RSFA) | ~90 s later: renamed from "Incoming form answer"; **SP folder renamed** | Planned |
 | T-07 | **Leads board**: one fictional Lead through the real intake (done by RSFA, fictional email) | CP "A" or "A & B" as per contacts; Lead name = CP name; no `8800779` error; SP folder correct | Planned |
-| T-08 | Replay of a run | `UNCHANGED`, nothing written | Planned |
+| T-08 | Replay of a run | `UNCHANGED`, nothing written | **Passed** (replay `d4b698d9…`, 4 ops) |
 | T-09 | Existing SuperForm profile `2897989144` via `manual_rerun` | Renamed; SP folder renamed | Planned (after approval) |
 | T-10 | Regression: `1054927` (Contact rename) still renames the CP; no loop | One rename per change | Planned |
 

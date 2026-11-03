@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Project slug | `client-profile-name-from-contacts` |
-| Project status | In Development — candidate built and validated locally (2026-11-03); nothing deployed |
+| Project status | Testing — `10093771` active since 2026-11-03 (runs in parallel with `1054932` until the SuperForm and Leads tests pass) |
 | Requester | RSFA technical consultant, after Rod Schubert report |
 | Technical owner | tech@rsfa.co.nz |
 | Related project | [client-profile-related-assets-renaming](../client-profile-related-assets-renaming/) |
