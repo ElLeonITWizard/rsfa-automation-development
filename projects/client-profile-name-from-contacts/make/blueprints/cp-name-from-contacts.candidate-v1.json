@@ -1,0 +1,420 @@
+{
+  "name": "M.com: Client Profile Name from Contacts (Nov 2026)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": 0,
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "restore": {
+          "parameters": {
+            "hook": {
+              "data": {
+                "editable": "true"
+              },
+              "label": "TODO: create at deployment - CP Name from Contacts Webhook"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "mapper": null,
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        }
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 13,
+              "module": "gateway:WebhookRespond",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "status": 200,
+                "body": "{\"challenge\":\"{{1.challenge}}\"}",
+                "headers": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              },
+              "filter": {
+                "name": "monday.com verification challenge",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{ifempty(1.challenge; \"\")}}",
+                      "b": "",
+                      "o": "text:notequal"
+                    }
+                  ]
+                ]
+              },
+              "metadata": {
+                "designer": {
+                  "x": 600,
+                  "y": -300
+                }
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 3,
+              "module": "util:FunctionSleep",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "duration": "{{if(1.event.type = \"create_pulse\"; 90; 1)}}"
+              },
+              "filter": {
+                "name": "Client Profile created, or its Contacts changed",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{ifempty(1.challenge; \"\")}}",
+                      "b": "",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.event.boardId}}",
+                      "b": "5024661649",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.event.pulseId}}",
+                      "b": "^[0-9]{1,20}$",
+                      "o": "text:pattern"
+                    },
+                    {
+                      "a": "{{1.event.type}}",
+                      "b": "^(create_pulse|manual_rerun)$",
+                      "o": "text:pattern"
+                    }
+                  ],
+                  [
+                    {
+                      "a": "{{ifempty(1.challenge; \"\")}}",
+                      "b": "",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.event.boardId}}",
+                      "b": "5024661649",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.event.pulseId}}",
+                      "b": "^[0-9]{1,20}$",
+                      "o": "text:pattern"
+                    },
+                    {
+                      "a": "{{1.event.type}}",
+                      "b": "update_column_value",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.event.columnId}}",
+                      "b": "board_relation38",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              },
+              "metadata": {
+                "designer": {
+                  "x": 600,
+                  "y": 0,
+                  "name": "Wait 90 s on create (Leads intake + SP folder creation), 1 s otherwise"
+                }
+              }
+            },
+            {
+              "id": 4,
+              "module": "monday:ExecuteGraphQLQueryV2",
+              "version": 2,
+              "parameters": {
+                "__IMTCONN__": 240128
+              },
+              "mapper": {
+                "method": "POST",
+                "queryBody": "query { items(ids: [{{1.event.pulseId}}]) { id name state board { id } contacts: column_values(ids: [\"board_relation38\"]) { ... on BoardRelationValue { linked_item_ids display_value } } } }",
+                "variablesDataSource": "array",
+                "variables": []
+              },
+              "metadata": {
+                "designer": {
+                  "x": 900,
+                  "y": 0,
+                  "name": "Read Client Profile and Contacts"
+                },
+                "restore": {
+                  "parameters": {
+                    "__IMTCONN__": {
+                      "label": "My Monday v2 connection - 1",
+                      "data": {
+                        "scoped": "true",
+                        "connection": "monday"
+                      }
+                    }
+                  }
+                }
+              },
+              "onerror": [
+                {
+                  "id": 9,
+                  "module": "scenario-service:CallSubscenario",
+                  "version": 2,
+                  "parameters": {
+                    "scenario": "SCN_8732008",
+                    "shouldWaitForExecutionEnd": true
+                  },
+                  "mapper": {
+                    "data": {
+                      "ScenarioURL": "{{var.scenario.url}}",
+                      "ScenarioName": "{{var.scenario.name}}",
+                      "ToRecipients": "tech@rsfa.co.nz",
+                      "ErrorMessage": "Client Profile name from Contacts: reading Client Profile <b>{{1.event.pulseId}}</b> failed. {{4.error.message}}. Name not changed."
+                    }
+                  },
+                  "metadata": {
+                    "designer": {
+                      "x": 900,
+                      "y": 300,
+                      "name": "Error Notification Email"
+                    },
+                    "restore": {
+                      "parameters": {
+                        "scenario": {
+                          "label": "Outlook: Email Notification after Failed Scenario"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 10,
+                  "module": "builtin:Ignore",
+                  "version": 1,
+                  "metadata": {
+                    "designer": {
+                      "x": 1200,
+                      "y": 300
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": 5,
+              "module": "code:ExecuteCode",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "language": "javascript",
+                "inputFormat": "editor",
+                "codeEditorJavascript": "// RSFA — Client Profile name from its Contacts (candidate).\n//\n// Body of the Make \"Code\" module (code:ExecuteCode, JavaScript) in the candidate scenario\n// \"M.com: Client Profile Name from Contacts (Nov 2026)\". Node tests load this same file\n// (tests/name-from-contacts.test.js).\n//\n// NEVER write double curly braces anywhere in this file, comments included. Make evaluates them as mapping\n// expressions inside the Code field, and the module then returns an empty result (lesson from 2026-11-02).\n// Keep the single top-level return at the end.\n//\n// Inputs (mapped in the module):\n//   profile      Monday GraphQL data of the Client Profile read: an object with key \"items\" (object or JSON text)\n//   eventItemId  the Client Profile item ID from the webhook\n// Output:\n//   { action: \"rename\" | \"skip\", reason, itemId, newName }\n// The rule is the same as M.com: Updates profile name when participants added (1054932) and\n// M.com: CP and Deals Renaming after Contact Renaming (1054927): Contacts text with \",\" replaced by \" &\".\n// Unlike 1054932, it also applies when contacts are removed, and when the profile is created with contacts.\n// A profile with NO contacts keeps its name (manual creation without contacts): nothing to derive.\n\nconst CLIENT_PROFILES_BOARD = '5024661649';\nconst MAX_NAME_LENGTH = 255; // Monday item-name limit\n\nfunction parse(value, name) {\n  if (value === undefined || value === null || value === '') throw new Error('missing input: ' + name);\n  return typeof value === 'string' ? JSON.parse(value) : value;\n}\nfunction first(list) { return Array.isArray(list) && list.length ? list[0] : null; }\nfunction clean(s) { return typeof s === 'string' ? s.replace(/\\s+/g, ' ').trim() : ''; }\n\nfunction planName(input) {\n  const data = parse(input.profile, 'profile');\n  const eventItemId = String(input.eventItemId || '');\n  const item = first(data.items);\n  const skip = (reason) => ({ action: 'skip', reason, itemId: item ? String(item.id) : eventItemId, newName: null });\n\n  if (!item) return skip('PROFILE_NOT_FOUND');\n  if (String(item.id) !== eventItemId) return skip('PROFILE_ID_MISMATCH');\n  if (!item.board || String(item.board.id) !== CLIENT_PROFILES_BOARD) return skip('NOT_A_CLIENT_PROFILE');\n  if (item.state && item.state !== 'active') return skip('PROFILE_NOT_ACTIVE');\n\n  const rel = first(item.contacts) || {};\n  const linked = Array.isArray(rel.linked_item_ids) ? rel.linked_item_ids : [];\n  if (linked.length === 0) return skip('NO_CONTACTS');\n\n  const display = clean(rel.display_value);\n  if (!display) return skip('CONTACT_NAMES_UNAVAILABLE');\n  const target = clean(display.replace(/,/g, ' &'));\n  if (!target) return skip('EMPTY_TARGET');\n  if (target.length > MAX_NAME_LENGTH) return skip('TARGET_TOO_LONG');\n  if (target === item.name) return skip('UNCHANGED');\n  return { action: 'rename', reason: 'CONTACTS', itemId: String(item.id), newName: target };\n}\n\n// Node (tests) export. In Make's runtime `module` is a function without `exports`, so this is skipped.\nif (typeof module !== 'undefined' && module && module.exports) {\n  module.exports = { planName };\n}\nreturn typeof input !== 'undefined' ? planName(input) : undefined;\n",
+                "input": [
+                  {
+                    "name": "profile",
+                    "value": "{{4.body.data}}"
+                  },
+                  {
+                    "name": "eventItemId",
+                    "value": "{{1.event.pulseId}}"
+                  }
+                ]
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1200,
+                  "y": 0,
+                  "name": "Name from Contacts (name-from-contacts.js)"
+                }
+              },
+              "onerror": [
+                {
+                  "id": 11,
+                  "module": "scenario-service:CallSubscenario",
+                  "version": 2,
+                  "parameters": {
+                    "scenario": "SCN_8732008",
+                    "shouldWaitForExecutionEnd": true
+                  },
+                  "mapper": {
+                    "data": {
+                      "ScenarioURL": "{{var.scenario.url}}",
+                      "ScenarioName": "{{var.scenario.name}}",
+                      "ToRecipients": "tech@rsfa.co.nz",
+                      "ErrorMessage": "Client Profile name from Contacts: planning failed for Client Profile <b>{{1.event.pulseId}}</b>. {{5.error.message}}. Name not changed."
+                    }
+                  },
+                  "metadata": {
+                    "designer": {
+                      "x": 1200,
+                      "y": 300,
+                      "name": "Error Notification Email"
+                    },
+                    "restore": {
+                      "parameters": {
+                        "scenario": {
+                          "label": "Outlook: Email Notification after Failed Scenario"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 12,
+                  "module": "builtin:Ignore",
+                  "version": 1,
+                  "metadata": {
+                    "designer": {
+                      "x": 1500,
+                      "y": 300
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": 6,
+              "module": "monday:ExecuteGraphQLQueryV2",
+              "version": 2,
+              "parameters": {
+                "__IMTCONN__": 240128
+              },
+              "mapper": {
+                "method": "POST",
+                "queryBody": "mutation ($i: ID!, $v: String!) { change_simple_column_value(board_id: 5024661649, item_id: $i, column_id: \"name\", value: $v) { id } }",
+                "variablesDataSource": "array",
+                "variables": [
+                  {
+                    "key": "i",
+                    "value": "{{5.result.itemId}}"
+                  },
+                  {
+                    "key": "v",
+                    "value": "{{5.result.newName}}"
+                  }
+                ]
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1500,
+                  "y": 0,
+                  "name": "Rename Client Profile"
+                },
+                "restore": {
+                  "parameters": {
+                    "__IMTCONN__": {
+                      "label": "My Monday v2 connection - 1",
+                      "data": {
+                        "scoped": "true",
+                        "connection": "monday"
+                      }
+                    }
+                  }
+                }
+              },
+              "filter": {
+                "name": "Rename needed",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{5.result.action}}",
+                      "b": "rename",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              },
+              "onerror": [
+                {
+                  "id": 7,
+                  "module": "scenario-service:CallSubscenario",
+                  "version": 2,
+                  "parameters": {
+                    "scenario": "SCN_8732008",
+                    "shouldWaitForExecutionEnd": true
+                  },
+                  "mapper": {
+                    "data": {
+                      "ScenarioURL": "{{var.scenario.url}}",
+                      "ScenarioName": "{{var.scenario.name}}",
+                      "ToRecipients": "tech@rsfa.co.nz",
+                      "ErrorMessage": "Client Profile name from Contacts: renaming Client Profile <b>{{1.event.pulseId}}</b> failed. {{6.error.message}}."
+                    }
+                  },
+                  "metadata": {
+                    "designer": {
+                      "x": 1500,
+                      "y": 300,
+                      "name": "Error Notification Email"
+                    },
+                    "restore": {
+                      "parameters": {
+                        "scenario": {
+                          "label": "Outlook: Email Notification after Failed Scenario"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 8,
+                  "module": "builtin:Ignore",
+                  "version": 1,
+                  "metadata": {
+                    "designer": {
+                      "x": 1800,
+                      "y": 300
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "designer": {
+      "orphans": []
+    },
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    }
+  }
+}

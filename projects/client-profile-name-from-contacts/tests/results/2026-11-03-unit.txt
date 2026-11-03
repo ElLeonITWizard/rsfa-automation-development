@@ -1,0 +1,17 @@
+# node tests/name-from-contacts.test.js — 2026-11-03T11:43Z — node v22.23.4
+PASS SuperForm path: placeholder name + 1 contact at creation -> contact name
+PASS Leads path: applicant name + 2 contacts -> "A & B" (same format as 1054932)
+PASS Leads path: name already correct -> skip UNCHANGED (second trigger is harmless)
+PASS Manual path without contacts -> skip NO_CONTACTS, never fails, name kept
+PASS Manual path: relation column missing entirely -> skip NO_CONTACTS
+PASS Contact removed (CP 2519772272 case): "A & B" with only A left -> "A"
+PASS Contacts present but names not returned -> skip, never blank the name
+PASS guards: missing / other board / archived / id mismatch
+PASS too long target -> skip
+PASS whitespace normalised; apostrophes and hyphens kept
+PASS input as JSON text works too
+PASS Make-style execution (function of input, module without exports)
+PASS source has no double curly braces
+PASS blueprint embeds exactly this code and no webhook URL
+
+14/14 passed
