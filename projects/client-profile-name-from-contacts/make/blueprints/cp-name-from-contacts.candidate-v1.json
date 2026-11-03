@@ -85,7 +85,7 @@
               "version": 1,
               "parameters": {},
               "mapper": {
-                "duration": "{{if(1.event.type = \"create_pulse\"; 90; 1)}}"
+                "duration": "{{if(1.event.type = \"create_pulse\"; 60; 1)}}"
               },
               "filter": {
                 "name": "Client Profile created, or its Contacts changed",
@@ -145,7 +145,7 @@
                 "designer": {
                   "x": 600,
                   "y": 0,
-                  "name": "Wait 90 s on create (Leads intake + SP folder creation), 1 s otherwise"
+                  "name": "Wait 60 s on create (Leads intake + SP folder creation), 1 s otherwise"
                 }
               }
             },

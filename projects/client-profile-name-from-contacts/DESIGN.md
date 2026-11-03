@@ -38,7 +38,7 @@ Monday CP board ── create_item ───────────────
                                                  ▼
   [filter] boardId = 5024661649, numeric pulseId,
            type create_pulse | manual_rerun, or update_column_value on board_relation38
-  [3] wait 90 s if create_pulse, else 1 s
+  [3] wait 60 s if create_pulse, else 1 s (was 90 s; changed 2026-11-03, see §2)
   [4] read CP: id, name, state, board, Contacts (ids + display_value)
   [5] Code module name-from-contacts.js → rename | skip(reason)
   [6] if rename: change_simple_column_value(name) ──> Monday change_name ──> PA folder rename + cascade 10083674
@@ -70,7 +70,7 @@ It only writes the CP `name`, which `8800779` also expects to be renamed (it wai
 
 ### Concurrency
 
-Not sequential (Monday's webhook challenge requires it; see the cascade project). Each run reads current data and writes only differences. The 90 s delay on create runs makes them read after the Leads intake has linked all contacts. The remaining race: two contact changes on the same profile within about 1 s. Its worst case is one stale name, corrected by the next change.
+Not sequential (Monday's webhook challenge requires it; see the cascade project). Each run reads current data and writes only differences. The 60 s delay on create runs makes them read after the Leads intake has linked all contacts (~5 s) and after the SharePoint folder exists. Measured on 27 CP creations Sep–Nov 2026: folder link written after min 20.6 s, median 29.4 s, max 50.8 s. If PA ever takes more than about 60 s, the folder may keep the placeholder name; fix it by renaming the CP. The remaining race: two contact changes on the same profile within about 1 s. Its worst case is one stale name, corrected by the next change.
 
 ### Alternatives rejected
 
@@ -91,10 +91,10 @@ Not sequential (Monday's webhook challenge requires it; see the cascade project)
 | T-03 | Manual: link 1 test contact to T-02 | Renamed to the contact name; SP folder renamed | **Passed** (11:48:19, 5 ops). Name and folder renamed; cascade ran (nothing to rename); `1054932` also ran and wrote the same name (transition) |
 | T-04 | Add 2nd contact | "A & B"; cascade runs | **Passed** (11:49:57). Order = Monday's stored link order (the API stored the IDs in a different order than sent); `1054932` produced the same name |
 | T-05 | Remove a contact (CP `2519772272` case) | Back to "A" | **Passed** (11:51:25, 5 ops). Name and folder renamed; `1054932` ran with 2 ops and did **not** rename (gap confirmed and covered) |
-| T-06 | **SuperForm**: submit the real "SF: Profile Opening" form with a test contact (done by RSFA) | ~90 s later: renamed from "Incoming form answer"; **SP folder renamed** | Planned |
-| T-07 | **Leads board**: one fictional Lead through the real intake (done by RSFA, fictional email) | CP "A" or "A & B" as per contacts; Lead name = CP name; no `8800779` error; SP folder correct | Planned |
+| T-06 | **SuperForm**: submit the real "SF: Profile Opening" form with a test contact (done by RSFA) | ~60 s later: renamed from "Incoming form answer"; **SP folder renamed** | **Partially verified** 2026-11-03: simulated with the same create payload (name "Incoming form answer" + contact) via the API. CP `2898257165` renamed after ~67 s; SP folder renamed; `1054932` did not run. The real form submission is still pending (RSFA) |
+| T-07 | **Leads board**: one fictional Lead through the real intake (done by RSFA, fictional email) | CP "A" or "A & B" as per contacts; Lead name = CP name; no `8800779` error; SP folder correct | **Pending** — deployed without it at the requester's request (2026-11-03); check on the next real Lead (Make history of `10093771`, `8800779`, `9711585`) |
 | T-08 | Replay of a run | `UNCHANGED`, nothing written | **Passed** (replay `d4b698d9…`, 4 ops) |
-| T-09 | Existing SuperForm profile `2897989144` via `manual_rerun` | Renamed; SP folder renamed | Planned (after approval) |
+| T-09 | Existing SuperForm profile `2897989144` | Renamed; SP folder renamed | **Done** 2026-11-03: renamed via the API to the contacts' name (computed by the rule); PA renamed the folder; the cascade ran (4 ops, nothing else to rename) |
 | T-10 | Regression: `1054927` (Contact rename) still renames the CP; no loop | One rename per change | Planned |
 
 Clean-up after tests (separate approval): archive the test CPs and Leads; their SharePoint folders stay unless RSFA deletes them.

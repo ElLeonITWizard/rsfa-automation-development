@@ -12,10 +12,11 @@ ERROR_SCENARIO = "SCN_8732008"  # Outlook: Email Notification after Failed Scena
 ALERT_TO = "tech@rsfa.co.nz"
 CP_BOARD = 5024661649
 CONTACTS_COL = "board_relation38"
-# Create events wait 90 s before reading: (1) the Leads intake (8800779) finishes linking all contacts, and
-# (2) Power Automate "SharePoint - Client Folder Creation from Monday.com" has created the folder (observed ~30 s
-# on 2026-11-03), so the folder-rename flow can find it by pulseID when our rename fires. Change events wait 1 s.
-CREATE_DELAY_S = 90
+# Create events wait 60 s before reading: (1) the Leads intake (8800779) finishes linking all contacts (~5 s), and
+# (2) Power Automate "SharePoint - Client Folder Creation from Monday.com" has created the folder, so the
+# folder-rename flow can find it by pulseID when our rename fires. Measured on 27 CP creations (Sep-Nov 2026):
+# folder link written after min 20.6 s, median 29.4 s, max 50.8 s. Requested 90 -> 60 s on 2026-11-03.
+CREATE_DELAY_S = 60
 
 CODE = (HERE / "code" / "name-from-contacts.js").read_text()
 assert "{" + "{" not in CODE and "}" + "}" not in CODE, "no double curly braces in the Code module source"
@@ -67,7 +68,7 @@ def blueprint():
               {"a": PULSE, "b": "^[0-9]{1,20}$", "o": "text:pattern"},
               {"a": "{{1.event.type}}", "b": "update_column_value", "o": "text:equal"},
               {"a": "{{1.event.columnId}}", "b": CONTACTS_COL, "o": "text:equal"}]]},
-         "metadata": {"designer": {"x": 600, "y": 0, "name": "Wait 90 s on create (Leads intake + SP folder creation), 1 s otherwise"}}},
+         "metadata": {"designer": {"x": 600, "y": 0, "name": "Wait 60 s on create (Leads intake + SP folder creation), 1 s otherwise"}}},
         read,
         {"id": 5, "module": "code:ExecuteCode", "version": 1, "parameters": {},
          "mapper": {"language": "javascript", "inputFormat": "editor", "codeEditorJavascript": CODE,
