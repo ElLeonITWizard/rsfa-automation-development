@@ -73,3 +73,5 @@ HANDOVER.md.
 ## Outstanding work
 
 REQUIREMENTS Q1–Q3; DEPLOYMENT_PLAN steps 0–7.
+
+| 2026-11-11 | Clean-up | Test items deleted from Monday at the requester's request: Existing KiwiSaver `2896920831` (Existing Mortgages `2896920905` was already deleted by someone else). Test contacts and test CP `2519813525` are back to their original names and links | Claude | Done | — |
