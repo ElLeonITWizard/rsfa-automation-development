@@ -1,0 +1,393 @@
+{
+  "name": "M.com: Mortgage Pipeline Borrowers from Client Profile (Nov 2026)",
+  "flow": [
+    {
+      "id": 1,
+      "module": "gateway:CustomWebHook",
+      "version": 1,
+      "parameters": {
+        "hook": 0,
+        "maxResults": 1
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "restore": {
+          "parameters": {
+            "hook": {
+              "data": {
+                "editable": "true"
+              },
+              "label": "TODO: create at deployment"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "mapper": null,
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        }
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 13,
+              "module": "gateway:WebhookRespond",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "status": 200,
+                "body": "{\"challenge\":\"{{1.challenge}}\"}",
+                "headers": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ]
+              },
+              "filter": {
+                "name": "monday.com verification challenge",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{ifempty(1.challenge; \"\")}}",
+                      "b": "",
+                      "o": "text:notequal"
+                    }
+                  ]
+                ]
+              },
+              "metadata": {
+                "designer": {
+                  "x": 600,
+                  "y": -300
+                }
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 3,
+              "module": "util:FunctionSleep",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "duration": "5"
+              },
+              "filter": {
+                "name": "Mortgage Pipeline item created",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{ifempty(1.challenge; \"\")}}",
+                      "b": "",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.event.boardId}}",
+                      "b": "5025201889",
+                      "o": "text:equal"
+                    },
+                    {
+                      "a": "{{1.event.pulseId}}",
+                      "b": "^[0-9]{1,20}$",
+                      "o": "text:pattern"
+                    },
+                    {
+                      "a": "{{1.event.type}}",
+                      "b": "^(create_pulse|manual_rerun)$",
+                      "o": "text:pattern"
+                    }
+                  ]
+                ]
+              },
+              "metadata": {
+                "designer": {
+                  "x": 600,
+                  "y": 0,
+                  "name": "Wait 5 s"
+                }
+              }
+            },
+            {
+              "id": 4,
+              "module": "monday:ExecuteGraphQLQueryV2",
+              "version": 2,
+              "parameters": {
+                "__IMTCONN__": 240128
+              },
+              "mapper": {
+                "method": "POST",
+                "queryBody": "query { items(ids: [{{1.event.pulseId}}]) { id name state board { id } lead: column_values(ids: [\"board_relation_mkyaz0ej\"]) { ... on BoardRelationValue { linked_item_ids } } borrowers: column_values(ids: [\"board_relation_mkyf123a\"]) { ... on BoardRelationValue { linked_item_ids } } profile: column_values(ids: [\"board_relation_mkyercdt\"]) { ... on BoardRelationValue { linked_item_ids linked_items { id state contacts: column_values(ids: [\"board_relation38\"]) { ... on BoardRelationValue { linked_item_ids display_value } } } } } } }",
+                "variablesDataSource": "array",
+                "variables": []
+              },
+              "metadata": {
+                "designer": {
+                  "x": 900,
+                  "y": 0,
+                  "name": "Read item, Lead, Borrowers, Client Profile contacts"
+                },
+                "restore": {
+                  "parameters": {
+                    "__IMTCONN__": {
+                      "label": "My Monday v2 connection - 1",
+                      "data": {
+                        "scoped": "true",
+                        "connection": "monday"
+                      }
+                    }
+                  }
+                }
+              },
+              "onerror": [
+                {
+                  "id": 9,
+                  "module": "scenario-service:CallSubscenario",
+                  "version": 2,
+                  "parameters": {
+                    "scenario": "SCN_8732008",
+                    "shouldWaitForExecutionEnd": true
+                  },
+                  "mapper": {
+                    "data": {
+                      "ScenarioURL": "{{var.scenario.url}}",
+                      "ScenarioName": "{{var.scenario.name}}",
+                      "ToRecipients": "tech@rsfa.co.nz",
+                      "ErrorMessage": "Mortgage Pipeline Borrowers: reading item <b>{{1.event.pulseId}}</b> failed. {{4.error.message}}. Nothing changed."
+                    }
+                  },
+                  "metadata": {
+                    "designer": {
+                      "x": 900,
+                      "y": 300,
+                      "name": "Error Notification Email"
+                    },
+                    "restore": {
+                      "parameters": {
+                        "scenario": {
+                          "label": "Outlook: Email Notification after Failed Scenario"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 10,
+                  "module": "builtin:Ignore",
+                  "version": 1,
+                  "metadata": {
+                    "designer": {
+                      "x": 1200,
+                      "y": 300
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": 5,
+              "module": "code:ExecuteCode",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "language": "javascript",
+                "inputFormat": "editor",
+                "codeEditorJavascript": "// RSFA — Mortgage Pipeline: default Borrowers from the Client Profile's Contacts (body of a Make Code module).\n//\n// Used by \"M.com: Mortgage Pipeline Borrowers from Client Profile (Nov 2026)\". Node tests load this same file.\n// NEVER write double curly braces anywhere in this file (Make evaluates them inside the Code field).\n// Keep the single top-level return at the end.\n//\n// Inputs:\n//   item         Monday GraphQL data of the Mortgage Pipeline item read: an object with key \"items\" (object or JSON text)\n//   eventItemId  the item ID from the webhook\n// Output:\n//   { action: \"fill\" | \"skip\", reason, itemId, columnValues }\n//   columnValues is the JSON text for change_multiple_column_values: Borrowers = the profile's Contacts,\n//   name = their names joined \" & \" (same format as M.com: Update Mortgage Pipeline Name from Borrowers, 1232945).\n//\n// Rules (Rod, 2026-11-07; requester, 2026-11-10):\n//   only items created from the Leads board (Leads link present), exactly one active Client Profile,\n//   that profile has contacts, and Borrowers is still empty. Everything else is skipped and nothing is written.\n//   Trusts / Companies are not added as Borrowers: they are linked in their own column by 8278547; when the\n//   borrower is a trust or company, the adviser swaps the Borrowers by hand (Rod's process).\n\nconst MORTGAGE_PIPELINE_BOARD = '5025201889';\nconst MAX_NAME_LENGTH = 255;\n\nfunction parse(value, name) {\n  if (value === undefined || value === null || value === '') throw new Error('missing input: ' + name);\n  return typeof value === 'string' ? JSON.parse(value) : value;\n}\nfunction first(list) { return Array.isArray(list) && list.length ? list[0] : null; }\nfunction ids(rel) { return rel && Array.isArray(rel.linked_item_ids) ? rel.linked_item_ids.map(String) : []; }\nfunction clean(s) { return typeof s === 'string' ? s.replace(/\\s+/g, ' ').trim() : ''; }\n\nfunction planBorrowers(input) {\n  const data = parse(input.item, 'item');\n  const eventItemId = String(input.eventItemId || '');\n  const item = first(data.items);\n  const skip = (reason) => ({ action: 'skip', reason, itemId: item ? String(item.id) : eventItemId, columnValues: null });\n\n  if (!item) return skip('ITEM_NOT_FOUND');\n  if (String(item.id) !== eventItemId) return skip('ITEM_ID_MISMATCH');\n  if (!item.board || String(item.board.id) !== MORTGAGE_PIPELINE_BOARD) return skip('NOT_MORTGAGE_PIPELINE');\n  if (item.state && item.state !== 'active') return skip('ITEM_NOT_ACTIVE');\n  if (ids(first(item.lead)).length === 0) return skip('NOT_FROM_LEADS_BOARD');\n  if (ids(first(item.borrowers)).length > 0) return skip('BORROWERS_ALREADY_SET');\n\n  const profileRel = first(item.profile) || {};\n  const profileIds = ids(profileRel);\n  if (profileIds.length !== 1) return skip(profileIds.length === 0 ? 'NO_CLIENT_PROFILE' : 'MULTIPLE_CLIENT_PROFILES');\n  const profile = (profileRel.linked_items || []).find((p) => String(p.id) === profileIds[0]);\n  if (!profile) return skip('CLIENT_PROFILE_UNAVAILABLE');\n  if (profile.state && profile.state !== 'active') return skip('CLIENT_PROFILE_NOT_ACTIVE');\n\n  const contactsRel = first(profile.contacts) || {};\n  const contactIds = ids(contactsRel);\n  if (contactIds.length === 0) return skip('PROFILE_HAS_NO_CONTACTS');\n  const display = clean(contactsRel.display_value);\n  if (!display) return skip('CONTACT_NAMES_UNAVAILABLE');\n  const newName = clean(display.replace(/,/g, ' &'));\n  if (!newName || newName.length > MAX_NAME_LENGTH) return skip('INVALID_NAME');\n\n  const values = { board_relation_mkyf123a: { item_ids: contactIds.map(Number) }, name: newName };\n  return { action: 'fill', reason: 'DEFAULT_BORROWERS', itemId: String(item.id), columnValues: JSON.stringify(values) };\n}\n\n// Node (tests) export. In Make's runtime `module` is a function without `exports`, so this is skipped.\nif (typeof module !== 'undefined' && module && module.exports) {\n  module.exports = { planBorrowers };\n}\nreturn typeof input !== 'undefined' ? planBorrowers(input) : undefined;\n",
+                "input": [
+                  {
+                    "name": "item",
+                    "value": "{{4.body.data}}"
+                  },
+                  {
+                    "name": "eventItemId",
+                    "value": "{{1.event.pulseId}}"
+                  }
+                ]
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1200,
+                  "y": 0,
+                  "name": "Plan Borrowers (borrowers-from-profile.js)"
+                }
+              },
+              "onerror": [
+                {
+                  "id": 11,
+                  "module": "scenario-service:CallSubscenario",
+                  "version": 2,
+                  "parameters": {
+                    "scenario": "SCN_8732008",
+                    "shouldWaitForExecutionEnd": true
+                  },
+                  "mapper": {
+                    "data": {
+                      "ScenarioURL": "{{var.scenario.url}}",
+                      "ScenarioName": "{{var.scenario.name}}",
+                      "ToRecipients": "tech@rsfa.co.nz",
+                      "ErrorMessage": "Mortgage Pipeline Borrowers: planning failed for item <b>{{1.event.pulseId}}</b>. {{5.error.message}}. Nothing changed."
+                    }
+                  },
+                  "metadata": {
+                    "designer": {
+                      "x": 1200,
+                      "y": 300,
+                      "name": "Error Notification Email"
+                    },
+                    "restore": {
+                      "parameters": {
+                        "scenario": {
+                          "label": "Outlook: Email Notification after Failed Scenario"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 12,
+                  "module": "builtin:Ignore",
+                  "version": 1,
+                  "metadata": {
+                    "designer": {
+                      "x": 1500,
+                      "y": 300
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "id": 6,
+              "module": "monday:ExecuteGraphQLQueryV2",
+              "version": 2,
+              "parameters": {
+                "__IMTCONN__": 240128
+              },
+              "mapper": {
+                "method": "POST",
+                "queryBody": "mutation ($i: ID!, $cv: JSON!) { change_multiple_column_values(board_id: 5025201889, item_id: $i, column_values: $cv) { id } }",
+                "variablesDataSource": "array",
+                "variables": [
+                  {
+                    "key": "i",
+                    "value": "{{5.result.itemId}}"
+                  },
+                  {
+                    "key": "cv",
+                    "value": "{{5.result.columnValues}}"
+                  }
+                ]
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1500,
+                  "y": 0,
+                  "name": "Set Borrowers and name"
+                },
+                "restore": {
+                  "parameters": {
+                    "__IMTCONN__": {
+                      "label": "My Monday v2 connection - 1",
+                      "data": {
+                        "scoped": "true",
+                        "connection": "monday"
+                      }
+                    }
+                  }
+                }
+              },
+              "filter": {
+                "name": "Fill needed",
+                "conditions": [
+                  [
+                    {
+                      "a": "{{5.result.action}}",
+                      "b": "fill",
+                      "o": "text:equal"
+                    }
+                  ]
+                ]
+              },
+              "onerror": [
+                {
+                  "id": 7,
+                  "module": "scenario-service:CallSubscenario",
+                  "version": 2,
+                  "parameters": {
+                    "scenario": "SCN_8732008",
+                    "shouldWaitForExecutionEnd": true
+                  },
+                  "mapper": {
+                    "data": {
+                      "ScenarioURL": "{{var.scenario.url}}",
+                      "ScenarioName": "{{var.scenario.name}}",
+                      "ToRecipients": "tech@rsfa.co.nz",
+                      "ErrorMessage": "Mortgage Pipeline Borrowers: setting Borrowers on item <b>{{1.event.pulseId}}</b> failed. {{6.error.message}}."
+                    }
+                  },
+                  "metadata": {
+                    "designer": {
+                      "x": 1500,
+                      "y": 300,
+                      "name": "Error Notification Email"
+                    },
+                    "restore": {
+                      "parameters": {
+                        "scenario": {
+                          "label": "Outlook: Email Notification after Failed Scenario"
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "id": 8,
+                  "module": "builtin:Ignore",
+                  "version": 1,
+                  "metadata": {
+                    "designer": {
+                      "x": 1800,
+                      "y": 300
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "instant": true,
+    "version": 1,
+    "designer": {
+      "orphans": []
+    },
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": true,
+      "autoCommitTriggerLast": true,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false,
+      "freshVariables": false
+    }
+  }
+}

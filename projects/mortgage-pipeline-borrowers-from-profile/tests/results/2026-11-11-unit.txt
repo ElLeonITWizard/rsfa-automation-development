@@ -1,0 +1,15 @@
+# node tests/borrowers-from-profile.test.js — 2026-11-11T00:46Z
+PASS from Leads board, empty Borrowers -> Borrowers = CP contacts, name "A & B"
+PASS single contact -> single borrower
+PASS manual item (no Lead link) -> skip, nothing written
+PASS Borrowers already set (e.g. a trust added by hand) -> never overwritten
+PASS no / several Client Profiles -> skip
+PASS profile without contacts or archived -> skip
+PASS guards: missing item, other board, archived item, id mismatch
+PASS names with quotes and apostrophes are safely JSON-encoded
+PASS input as JSON text
+PASS Make-style execution (function of input, module without exports)
+PASS source has no double curly braces
+PASS blueprint embeds exactly this code, sequential off, no webhook URL
+
+12/12 passed
